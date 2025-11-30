@@ -1,0 +1,35 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 40px;
+}
+
+table {
+  margin: auto;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+td {
+  border: 1px solid #555;
+  padding: 15px 20px;
+  cursor: pointer;
+  font-size: 20px;
+  transition: 0.2s;
+}
+
+td:hover {
+  background: #d0ebff;
+  transform: scale(1.05);
+}
+
+.selected {
+  background: #74c0fc !important;
+  color: white;
+}
+
+#message {
+  margin-top: 30px;
+  font-size: 22px;
+  font-weight: bold;
+}
