@@ -46,7 +46,7 @@ function loadExercise(num) {
 }
 
 // -----------------------------
-// ACTIVATION DES CLICS
+// CLIC SUR LES CASES
 // -----------------------------
 function activateClicks(ex) {
 
@@ -75,7 +75,6 @@ function activateClicks(ex) {
 
       const value = ex.f[i];
 
-      // Recherche des antécédents
       const ant = [];
       for (let j = 0; j < ex.f.length; j++) {
         if (ex.f[j] === value) ant.push(ex.x[j]);
@@ -93,7 +92,7 @@ function activateClicks(ex) {
 }
 
 // -----------------------------
-// EFFACER LES SÉLECTIONS
+// EFFACER SÉLECTION
 // -----------------------------
 function clearSelection() {
   document.querySelectorAll("td").forEach(td =>
