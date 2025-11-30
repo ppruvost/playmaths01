@@ -4,13 +4,19 @@ body {
   margin: 40px;
 }
 
+select {
+  padding: 10px;
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
 table {
   margin: auto;
   border-collapse: collapse;
   margin-top: 20px;
 }
 
-td {
+td, th {
   border: 1px solid #555;
   padding: 15px 20px;
   cursor: pointer;
@@ -32,4 +38,10 @@ td:hover {
   margin-top: 30px;
   font-size: 22px;
   font-weight: bold;
+}
+
+#explanation {
+  margin-top: 10px;
+  font-size: 18px;
+  color: #333;
 }
