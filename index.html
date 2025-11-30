@@ -2,28 +2,29 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Tableau interactif : Images et Antécédents</title>
+  <title>Tableaux interactifs façon Kahoot</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>Tableaux interactifs : Images et Antécédents</h1>
+<h1 class="title">Tableaux interactifs – Images & Antécédents</h1>
 
-<p>Choisis un exercice :</p>
-
-<select id="select-ex">
-  <option value="1">Exercice 1</option>
-  <option value="2">Exercice 2</option>
-  <option value="3">Exercice 3</option>
-</select>
+<div class="selector-box">
+  <label for="select-ex">Choisis un exercice :</label>
+  <select id="select-ex">
+    <option value="1">Exercice 1</option>
+    <option value="2">Exercice 2</option>
+    <option value="3">Exercice 3</option>
+  </select>
+</div>
 
 <table id="table-valeurs">
   <tr id="row-x"></tr>
   <tr id="row-f"></tr>
 </table>
 
-<div id="message"></div>
-<div id="explanation"></div>
+<div id="message" class="message"></div>
+<div id="explanation" class="explain"></div>
 
 <script src="script.js"></script>
 </body>
