@@ -1,47 +1,100 @@
 body {
-  font-family: Arial, sans-serif;
+  font-family: "Montserrat", Arial, sans-serif;
   text-align: center;
-  margin: 40px;
+  background: #f2f2f2;
+  margin: 0;
+  padding: 30px;
+}
+
+.title {
+  font-size: 36px;
+  margin-bottom: 20px;
+  color: #3b3b98;
+  font-weight: 700;
+}
+
+/* Sélecteur exercice */
+.selector-box {
+  margin: 20px auto;
+  font-size: 20px;
 }
 
 select {
-  padding: 10px;
+  padding: 10px 20px;
   font-size: 18px;
-  margin-bottom: 20px;
+  border-radius: 12px;
+  border: 2px solid #3b3b98;
+  background: white;
+  transition: 0.3s;
 }
 
-table {
-  margin: auto;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-td, th {
-  border: 1px solid #555;
-  padding: 15px 20px;
-  cursor: pointer;
-  font-size: 20px;
-  transition: 0.2s;
-}
-
-td:hover {
-  background: #d0ebff;
+select:hover {
   transform: scale(1.05);
 }
 
-.selected {
-  background: #74c0fc !important;
-  color: white;
-}
-
-#message {
+/* Tableau */
+table {
+  margin: auto;
+  border-collapse: collapse;
   margin-top: 30px;
-  font-size: 22px;
-  font-weight: bold;
+  box-shadow: 0 0 20px rgba(0,0,0,0.15);
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-#explanation {
+th {
+  background: #3b3b98;
+  color: white;
+  padding: 20px;
+  font-size: 22px;
+}
+
+td {
+  padding: 25px 32px;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  color: white;
+  transition: 0.25s;
+}
+
+/* Couleurs de cases façon Kahoot */
+.cell-x:nth-child(odd) { background: #ff6b6b; }   /* rouge */
+.cell-x:nth-child(even){ background: #ff922b; }   /* orange */
+
+.cell-f:nth-child(odd) { background: #4dabf7; }   /* bleu */
+.cell-f:nth-child(even){ background: #51cf66; }   /* vert */
+
+/* Survol dynamique */
+td:hover {
+  transform: scale(1.15);
+  filter: brightness(1.2);
+  box-shadow: 0 0 12px rgba(0,0,0,0.3);
+}
+
+/* Sélection */
+.selected {
+  animation: pop 0.25s ease forwards;
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.25); }
+  100% { transform: scale(1.06); }
+}
+
+/* Messages */
+.message {
+  margin-top: 30px;
+  font-size: 26px;
+  font-weight: bold;
+  color: #222;
+}
+
+.explain {
   margin-top: 10px;
-  font-size: 18px;
+  font-size: 20px;
   color: #333;
+  font-style: italic;
 }
