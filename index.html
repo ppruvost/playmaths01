@@ -2,14 +2,20 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Tableau interactif : images et antécédents</title>
+  <title>Tableau interactif : Images et Antécédents</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>Tableau interactif : Images et Antécédents</h1>
+<h1>Tableaux interactifs : Images et Antécédents</h1>
 
-<p>Clique sur une valeur du tableau pour afficher l’information.</p>
+<p>Choisis un exercice :</p>
+
+<select id="select-ex">
+  <option value="1">Exercice 1</option>
+  <option value="2">Exercice 2</option>
+  <option value="3">Exercice 3</option>
+</select>
 
 <table id="table-valeurs">
   <tr id="row-x"></tr>
@@ -17,6 +23,7 @@
 </table>
 
 <div id="message"></div>
+<div id="explanation"></div>
 
 <script src="script.js"></script>
 </body>
