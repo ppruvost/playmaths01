@@ -16,6 +16,14 @@ const exercices = {
   }
 };
 
+// Couleurs + formes assignées comme Kahoot
+const kahootStyles = [
+  { color: "k-red",    shape: "triangle" },
+  { color: "k-blue",   shape: "square" },
+  { color: "k-green",  shape: "diamond" },
+  { color: "k-yellow", shape: "circle" }
+];
+
 // -----------------------------
 // RÉFÉRENCES DOM
 // -----------------------------
@@ -38,15 +46,27 @@ function loadExercise(num) {
   explanation.textContent = "";
 
   for (let i = 0; i < ex.x.length; i++) {
-    rowX.innerHTML += `<td class="cell-x" data-index="${i}">${ex.x[i]}</td>`;
-    rowF.innerHTML += `<td class="cell-f" data-index="${i}">${ex.f[i]}</td>`;
+    const styleX = kahootStyles[i % 4];
+    const styleF = kahootStyles[(i + 1) % 4];
+
+    rowX.innerHTML += `
+      <td class="${styleX.color} cell-x" data-index="${i}">
+        <div class="shape ${styleX.shape}"></div>
+        ${ex.x[i]}
+      </td>`;
+
+    rowF.innerHTML += `
+      <td class="${styleF.color} cell-f" data-index="${i}">
+        <div class="shape ${styleF.shape}"></div>
+        ${ex.f[i]}
+      </td>`;
   }
 
   activateClicks(ex);
 }
 
 // -----------------------------
-// CLIC SUR LES CASES
+// ACTIVATION DES CLICS
 // -----------------------------
 function activateClicks(ex) {
 
@@ -62,7 +82,7 @@ function activateClicks(ex) {
 
       message.textContent = `✔️ L’image de ${x} est f(${x}) = ${fx}`;
       explanation.textContent =
-        `L’image correspond à la valeur située dans la ligne f(x), directement sous le x choisi.`;
+        `Pour trouver l’image, on lit la valeur juste en dessous dans la ligne f(x).`;
     };
   });
 
@@ -84,15 +104,12 @@ function activateClicks(ex) {
         `✔️ Les antécédents de ${value} sont : ${ant.join(", ")}`;
 
       explanation.textContent =
-        `Un antécédent est une valeur de x dont l’image est ${value}. `
-        + `On repère dans la ligne f(x) toutes les cases qui valent ${value}, `
-        + `puis on lit les x correspondants au-dessus.`;
+        `Un antécédent est un x qui possède cette image. 
+         On repère toutes les cases f(x) = ${value}, puis on lit les x correspondants.`;
     };
   });
 }
 
-// -----------------------------
-// EFFACER SÉLECTION
 // -----------------------------
 function clearSelection() {
   document.querySelectorAll("td").forEach(td =>
@@ -101,9 +118,5 @@ function clearSelection() {
 }
 
 // -----------------------------
-// CHARGEMENT INITIAL
-// -----------------------------
 loadExercise(1);
-
-// Changement d’exercice
 select.onchange = () => loadExercise(select.value);
