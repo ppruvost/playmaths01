@@ -10,8 +10,8 @@
   }
 })();
 
-// sendResults(user, score, shuffledQuestions)
-function sendResults(user, score, shuffledQuestions){
+// sendResults(user, score, shuffledQuestions, playMathsPoints)
+function sendResults(user, score, shuffledQuestions, playMathsPoints){
   // sécurité : vérifier emailjs présent
   if(!window.emailjs){
     console.warn("EmailJS non chargé.");
@@ -19,6 +19,7 @@ function sendResults(user, score, shuffledQuestions){
   }
 
   const scoreFinal = `${score} / ${shuffledQuestions.length}`;
+  const bonusFinal = `${playMathsPoints} pts`;
 
   // Préparer récapitulatif
   let recap = "";
@@ -28,15 +29,17 @@ function sendResults(user, score, shuffledQuestions){
     recap += `Bonne réponse: ${q.bonne_reponse}\n\n`;
   });
 
+  // Paramètres envoyés à EmailJS
   const emailParams = {
     nom: user.nom || "",
     prenom: user.prenom || "",
     score: scoreFinal,
+    points_play_maths: bonusFinal,   // <<< AJOUT IMPORTANT
     details: recap,
     email: "lyceepro.mermoz@gmail.com"
   };
 
-  // Remplace service/template par les tiens si besoin
+  // Remplacer service/template par les tiens si besoin
   emailjs.send("service_cgh817y", "template_ly7s41e", emailParams)
     .then(() => {
       alert("✅ Résultats envoyés automatiquement par e-mail à votre professeur. Merci !");
