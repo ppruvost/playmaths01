@@ -1,141 +1,180 @@
 /* ----- GLOBAL ----- */
-body {
-    margin: 0;
-    font-family: "Montserrat", sans-serif;
-    background: #f5f5f5; /* Fond clair */
-    color: #222; /* Texte sombre */
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding-top: 40px;
-    min-height: 100vh;
+:root{
+  --bg: #f5f5f5;
+  --text: #222;
+  --card: #e9e9e9;
+  --accent: #3498db;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family: "Montserrat", "Lexend", system-ui, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  display:flex;
+  justify-content:center;
+  padding:24px;
+  min-height:100vh;
 }
 
-#userForm input[type="text"] {
-    width: 90%;
-    max-width: 450px;
-    padding: 14px 18px;
-    font-size: 20px;
-    border-radius: 10px;
-    border: 2px solid #ccc;
-    margin-bottom: 18px;
+/* Page layout */
+.page{
+  width:100%;
+  max-width:1100px;
+  margin:0 auto;
 }
 
-/* ----- BOUTON START PAGE D'ACCUEIL ----- */
-button.start {
-    font-size: 22px;
-    padding: 16px 40px;
-    border-radius: 12px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-    margin-top: 12px;
-    transition: 0.25s ease;
+/* Header */
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:18px;
+}
+.header h1{
+  margin:0;
+  font-size:1.25rem;
+}
+.user-info{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.user-info input{
+  padding:10px 12px;
+  border-radius:8px;
+  border:1px solid #cfcfcf;
+  font-size:0.95rem;
+}
+.start{
+  background:#4CAF50;
+  color:white;
+  border:none;
+  padding:10px 16px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:700;
+}
+.start:hover{transform:scale(1.02)}
+
+/* Kahoot container */
+.kahoot-container{
+  background:transparent;
+  padding:12px;
 }
 
-button.start:hover {
-    transform: scale(1.08);
-    background-color: #3b8e42;
+/* Timer */
+.timer-and-count{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:12px;
+}
+.timer-svg{display:block}
+#timer-circle{
+  fill:none;
+  stroke:#cccccc;
+  stroke-width:6;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+.timer-number{
+  font-weight:800;
+  font-size:1.1rem;
+  min-width:28px;
+  text-align:center;
 }
 
-/* ----- BOUTON START STANDARD ----- */
-.start-btn {
-    padding: 12px 25px;
-    font-size: 18px;
-    border-radius: 8px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: 0.2s ease;
+/* QUESTION */
+.question-box{
+  background:var(--card);
+  padding:18px;
+  border-radius:12px;
+  text-align:center;
+  font-weight:700;
+  margin-bottom:14px;
+  font-size:1.15rem;
 }
 
-.start-btn:hover {
-    background-color: #3e8e41;
-    transform: scale(1.05);
+/* ANSWER GRID */
+.answer-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
 }
 
-/* ----- CONTAINER PRINCIPAL ----- */
-.kahoot-container {
-    width: 90%;
-    max-width: 1200px;
+/* ANSWER BUTTONS */
+.answer{
+  display:flex;
+  align-items:center;
+  padding:18px;
+  border-radius:12px;
+  color:white;
+  font-size:1.05rem;
+  font-weight:700;
+  cursor:pointer;
+  transition: transform .12s ease, filter .12s ease;
+  user-select:none;
+  min-height:64px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
 }
 
-/* ----- QUESTION ----- */
-.question-box {
-    background: #e0e0e0;
-    padding: 15px 25px;
-    text-align: center;
-    border-radius: 12px;
-    color: #000;
-    font-weight: 700;
-    margin-bottom: 20px;
+/* icon placeholder left */
+.answer::before{
+  content:"";
+  width:28px;
+  height:28px;
+  background:rgba(255,255,255,0.95);
+  margin-right:14px;
+  display:inline-block;
 }
 
-/* ----- GRILLE DES CHOIX ----- */
-.answer-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
+/* shapes */
+.answer.red::before{ clip-path: polygon(50% 0, 0 100%, 100% 100%); }
+.answer.blue::before{ clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+.answer.yellow::before{ border-radius:50%; }
+.answer.green::before{ border-radius:6px; }
+
+/* colors */
+.red{ background:#D92D2D; }
+.blue{ background:#2369E2; }
+.yellow{ background:#E5A61C; color:#000; }
+.green{ background:#2FA344; }
+
+/* interactions */
+.answer:hover{ filter:brightness(1.06); transform:translateY(-3px); }
+.answer.selected{
+  outline:4px solid rgba(0,0,0,0.12);
+  transform:scale(1.02);
 }
 
-/* ----- BOUTONS RÉPONSES ----- */
-.answer {
-    display: flex;
-    align-items: center;
-    padding: 25px;
-    border-radius: 12px;
-    color: white;
-    font-size: 1.4em;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.15s ease-in-out;
-    position: relative;
-    overflow: hidden;
+/* result borders */
+.answer-correct{
+  box-shadow: 0 0 0 4px rgba(0,255,106,0.18), 0 6px 18px rgba(0,0,0,0.06);
+}
+.answer-wrong{
+  box-shadow: 0 0 0 4px rgba(255,0,51,0.18), 0 6px 18px rgba(0,0,0,0.06);
 }
 
-/* Icônes / formes */
-.answer::before {
-    content: "";
-    width: 30px;
-    height: 30px;
-    margin-right: 18px;
-    background: white;
-    display: inline-block;
+/* explanation */
+.explanation{
+  margin-top:16px;
+  padding:14px;
+  border-left:6px solid #ffcc00;
+  background:#fffbe6;
+  border-radius:8px;
+  font-size:0.98rem;
 }
 
-.answer.red::before { 
-    clip-path: polygon(50% 0, 0 100%, 100% 100%); /* Triangle */
+/* score */
+.score-box{
+  margin-top:14px;
+  font-weight:700;
 }
 
-.answer.blue::before {
-    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); /* Losange */
-}
-
-.answer.yellow::before {
-    border-radius: 50%; /* Cercle */
-}
-
-.answer.green::before {
-    border-radius: 3px; /* Carré arrondi */
-}
-
-/* Couleurs */
-.red { background: #D92D2D; }
-.blue { background: #2369E2; }
-.yellow { background: #E5A61C; color: #000; }
-.green { background: #2FA344; }
-
-/* Hover */
-.answer:hover {
-    filter: brightness(1.12);
-    transform: scale(1.03);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .answer-grid {
-        grid-template-columns: 1fr;
-    }
+/* responsive */
+@media (max-width:760px){
+  .answer-grid{ grid-template-columns:1fr; }
+  .header{ flex-direction:column; align-items:flex-start; gap:8px;}
 }
