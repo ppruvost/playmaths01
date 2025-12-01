@@ -11,7 +11,35 @@ body {
     min-height: 100vh;
 }
 
-/* ----- START BOUTON ----- */
+#userForm input[type="text"] {
+    width: 90%;
+    max-width: 450px;
+    padding: 14px 18px;
+    font-size: 20px;
+    border-radius: 10px;
+    border: 2px solid #ccc;
+    margin-bottom: 18px;
+}
+
+/* ----- BOUTON START PAGE D'ACCUEIL ----- */
+button.start {
+    font-size: 22px;
+    padding: 16px 40px;
+    border-radius: 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-top: 12px;
+    transition: 0.25s ease;
+}
+
+button.start:hover {
+    transform: scale(1.08);
+    background-color: #3b8e42;
+}
+
+/* ----- BOUTON START STANDARD ----- */
 .start-btn {
     padding: 12px 25px;
     font-size: 18px;
@@ -52,7 +80,7 @@ body {
     gap: 18px;
 }
 
-/* ----- BOUTONS ----- */
+/* ----- BOUTONS RÉPONSES ----- */
 .answer {
     display: flex;
     align-items: center;
@@ -67,7 +95,7 @@ body {
     overflow: hidden;
 }
 
-/* Icônes */
+/* Icônes / formes */
 .answer::before {
     content: "";
     width: 30px;
@@ -77,24 +105,26 @@ body {
     display: inline-block;
 }
 
-/* Formes */
 .answer.red::before { 
-    clip-path: polygon(50% 0, 0 100%, 100% 100%);
+    clip-path: polygon(50% 0, 0 100%, 100% 100%); /* Triangle */
 }
+
 .answer.blue::before {
-    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); /* Losange */
 }
+
 .answer.yellow::before {
-    border-radius: 50%;
+    border-radius: 50%; /* Cercle */
 }
+
 .answer.green::before {
-    border-radius: 3px;
+    border-radius: 3px; /* Carré arrondi */
 }
 
 /* Couleurs */
 .red { background: #D92D2D; }
 .blue { background: #2369E2; }
-.yellow { background: #E5A61C; color: black; }
+.yellow { background: #E5A61C; color: #000; }
 .green { background: #2FA344; }
 
 /* Hover */
