@@ -6,6 +6,11 @@ let shuffledQuestions = [];
 let timerInterval = null;
 let timeLeft = 30;
 
+// >>> AJOUT PLAY MATHS <<<
+let startTime = 0;             // début chrono question
+let playMathsPoints = 0;       // points Play Maths cumulés
+// <<< FIN AJOUT <<<
+
 // éléments DOM
 const startBtn = document.getElementById("startQuiz");
 const nomInput = document.getElementById("nom");
@@ -35,6 +40,7 @@ startBtn.addEventListener("click", () => {
   // initialisation
   score = 0;
   current = 0;
+  playMathsPoints = 0;   // <<< IMPORTANT : reset du bonus
 
   // clone et mélange des questions
   if(!Array.isArray(questions) || questions.length === 0){
@@ -85,6 +91,10 @@ function showQuestion(){
     answerGrid.appendChild(d);
   });
 
+  // >>> DÉMARRAGE CHRONO PLAY MATHS <<<
+  startTime = Date.now();
+  // <<< FIN AJOUT <<<
+
   // démarrer timer
   startTimer();
 }
@@ -94,7 +104,6 @@ function handleAnswer(option, selectedDiv){
   clearTimer();
 
   const q = shuffledQuestions[current];
-  // enregistrer la réponse de l'élève
   q.userAnswer = option || "Aucune";
 
   // désactiver clics
@@ -102,13 +111,25 @@ function handleAnswer(option, selectedDiv){
 
   // montrer la bonne réponse et feedback
   const correct = q.bonne_reponse;
-  // si sélection valide
-  if(option === correct){
+  const isCorrect = option === correct;
+
+  if(isCorrect){
     if(selectedDiv) selectedDiv.classList.add("answer-correct");
     score++;
+
+    // >>> BONUS PLAY MATHS <<<
+    const timeTaken = (Date.now() - startTime) / 1000;
+    let bonus = 0;
+
+    if(timeTaken < 2) bonus = 5;
+    else if(timeTaken < 5) bonus = 3;
+    else if(timeTaken < 10) bonus = 1;
+
+    playMathsPoints += bonus;
+    // <<< FIN BONUS >>>
+
   } else {
     if(selectedDiv) selectedDiv.classList.add("answer-wrong");
-    // mettre en évidence la bonne réponse
     document.querySelectorAll(".answer").forEach(a => {
       if(a.textContent.trim() === String(correct).trim()){
         a.classList.add("answer-correct");
@@ -116,14 +137,12 @@ function handleAnswer(option, selectedDiv){
     });
   }
 
-  // afficher explication pédagogique
+  // afficher explication
   explanationBox.innerHTML = `<strong>Explication :</strong> ${q.explication || ""}`;
   explanationBox.style.display = "block";
 
-  // mettre à jour score intermédiaire visible
   scoreBox.textContent = `Score : ${score} / ${shuffledQuestions.length}`;
 
-  // si toutes les questions répondues, fin après 9s, sinon next
   setTimeout(() => {
     current++;
     if(current < shuffledQuestions.length){
@@ -134,13 +153,14 @@ function handleAnswer(option, selectedDiv){
   }, 9000);
 }
 
-// cas timeout (pas de réponse)
+// cas timeout
 function forceTimeout(){
-  // enregistre "Aucune" et affiche la bonne réponse
   const q = shuffledQuestions[current];
   q.userAnswer = "Aucune";
-  // simuler gestion d'une mauvaise réponse
-  // trouver la bonne réponse DOM et marquer
+
+  // aucune augmentation du score
+  // >>> pas de bonus Play Maths en cas de timeout <<<
+
   document.querySelectorAll(".answer").forEach(a => {
     if(a.textContent.trim() === String(q.bonne_reponse).trim()){
       a.classList.add("answer-correct");
@@ -152,7 +172,7 @@ function forceTimeout(){
 
   explanationBox.innerHTML = `<strong>Explication :</strong> ${q.explication || ""}`;
   explanationBox.style.display = "block";
-  // mise à jour score (aucune augmentation)
+
   scoreBox.textContent = `Score : ${score} / ${shuffledQuestions.length}`;
 
   setTimeout(() => {
@@ -172,7 +192,6 @@ function startTimer(){
   const circumference = 2 * Math.PI * radius;
   timerCircle.style.strokeDasharray = `${circumference}`;
   timerCircle.style.strokeDashoffset = `${0}`;
-  // couleur par défaut
   timerCircle.style.stroke = "#e0e0e0";
 
   timerNumber.textContent = timeLeft;
@@ -195,6 +214,7 @@ function startTimer(){
     }
   }, 1000);
 }
+
 function clearTimer(){
   if(timerInterval) clearInterval(timerInterval);
   timerInterval = null;
@@ -203,17 +223,14 @@ function clearTimer(){
 // ---- FIN DU QUIZ ----
 function endQuiz(){
   clearTimer();
-  // arrêter musique si présente
+
   if(bgMusic){ try{ bgMusic.pause(); bgMusic.currentTime = 0; } catch(e){} }
-  // play jingle si présent
   if(victorySound) victorySound.play().catch(()=>{});
 
-  // confettis
   try{
     confetti && confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
   }catch(e){}
 
-  // affichage récap
   questionBox.textContent = `Quiz terminé ! Score final : ${score} / ${shuffledQuestions.length}`;
   answerGrid.innerHTML = "";
   explanationBox.style.display = "none";
@@ -221,11 +238,13 @@ function endQuiz(){
 
   // appel envoi des résultats (envoi.js)
   if(typeof sendResults === "function"){
-    // informations utilisateur
     const user = {
       nom: document.getElementById("nom").value.trim(),
       prenom: document.getElementById("prenom").value.trim()
     };
-    sendResults(user, score, shuffledQuestions);
+
+    // >>> AJOUT PLAY MATHS DANS L’ENVOI <<<
+    sendResults(user, score, shuffledQuestions, playMathsPoints);
+    // <<< FIN AJOUT <<<
   }
 }
