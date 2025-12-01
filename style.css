@@ -9,6 +9,23 @@ body {
     height: 100vh;
 }
 
+/* ----- START BOUTON ----- */
+.start-btn {
+    padding: 12px 25px;       /* Agrandit le bouton */
+    font-size: 18px;          /* Texte plus grand */
+    border-radius: 8px;       /* Coins arrondis */
+    background-color: #4CAF50; /* Couleur plus visible */
+    color: white;             /* Texte blanc */
+    border: none;             /* Retire la bordure par défaut */
+    cursor: pointer;          /* Curseur interactif */
+    transition: 0.2s ease;    /* Animation au survol */
+}
+
+.start-btn:hover {
+    background-color: #45a049;
+    transform: scale(1.05);   /* Légère augmentation au survol */
+}
+
 /* ----- CONTAINER PRINCIPAL ----- */
 .kahoot-container {
     width: 90%;
@@ -17,85 +34,3 @@ body {
 
 /* ----- QUESTION ----- */
 .question-box {
-    background: rgba(255,255,255,0.20);
-    padding: 15px 25px;
-    text-align: center;
-    border-radius: 12px;
-    color: white;
-    font-weight: 700;
-    margin-bottom: 20px;
-    backdrop-filter: blur(10px);
-}
-
-/* ----- GRILLE DES CHOIX ----- */
-.answer-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
-}
-
-/* ----- BOUTONS ----- */
-.answer {
-    display: flex;
-    align-items: center;
-    padding: 25px;
-    border-radius: 12px;
-    color: white;
-    font-size: 1.4em;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.15s ease-in-out;
-    position: relative;
-    overflow: hidden;
-}
-
-/* ----- Icônes Kahoot ----- */
-.answer::before {
-    content: "";
-    width: 30px;
-    height: 30px;
-    margin-right: 18px;
-    background: white;
-    display: inline-block;
-}
-
-/* Formes géométriques — version fidèle */
-.answer.red::before { 
-    clip-path: polygon(50% 0, 0 100%, 100% 100%);
-} /* triangle */
-
-.answer.blue::before {
-    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
-} /* losange */
-
-.answer.yellow::before {
-    border-radius: 50%;
-} /* cercle */
-
-.answer.green::before {
-    border-radius: 3px;
-} /* carré */
-
-/* ----- COULEURS ----- */
-.red { background: #D92D2D; }
-.blue { background: #2369E2; }
-.yellow { background: #E5A61C; }
-.green { background: #2FA344; }
-
-/* ----- HOVER ----- */
-.answer:hover {
-    filter: brightness(1.15);
-    transform: scale(1.03);
-}
-
-/* ----- RESPONSIVE ----- */
-@media (max-width: 768px) {
-    .answer {
-        font-size: 1.1em;
-        padding: 18px;
-    }
-
-    .answer-grid {
-        grid-template-columns: 1fr;
-    }
-}
