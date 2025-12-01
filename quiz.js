@@ -6,10 +6,10 @@ let shuffledQuestions = [];
 let timerInterval = null;
 let timeLeft = 30;
 
-// >>> AJOUT PLAY MATHS <<<
-let startTime = 0;            // début chrono question
-let playMathsPoints = 0;      // points Play Maths cumulés
-// <<< FIN AJOUT <<<
+// >>> BONUS PLAY MATHS <<<
+let startTime = 0;            
+let playMathsPoints = 0;      
+// <<< FIN BONUS >>>
 
 // éléments DOM
 const startBtn = document.getElementById("startQuiz");
@@ -25,23 +25,22 @@ const scoreBox = document.getElementById("scoreBox");
 const victorySound = document.getElementById("victorySound");
 const bgMusic = document.getElementById("bgMusic");
 
-// fonction utilitaire pour mélanger
+// Mélange
 function shuffleArray(arr){
   return arr.slice().sort(()=>Math.random()-0.5);
 }
 
-// start
+// DEMARRAGE
 startBtn.addEventListener("click", () => {
-
   const nom = nomInput.value.trim();
   const prenom = prenomInput.value.trim();
   if(!nom){ nomInput.focus(); return; }
   if(!prenom){ prenomInput.focus(); return; }
 
-  // initialisation
+  // reset
   score = 0;
   current = 0;
-  playMathsPoints = 0;   // reset bonus
+  playMathsPoints = 0;
 
   if(!Array.isArray(questions) || questions.length === 0){
     alert("Erreur : questions introuvables. Vérifie questions.js");
@@ -56,11 +55,10 @@ startBtn.addEventListener("click", () => {
   }
 
   document.getElementById("userForm").style.display = "none";
-
   showQuestion();
 });
 
-// montre la question courante
+// AFFICHE QUESTION
 function showQuestion(){
   clearTimer();
 
@@ -86,15 +84,14 @@ function showQuestion(){
     answerGrid.appendChild(d);
   });
 
-  // >>> DÉMARRAGE CHRONO PLAY MATHS <<<
+  // >>> START chrono pour bonus <<<
   startTime = Date.now();
-  // <<< FIN AJOUT <<<
+  // <<< FIN >>>
 
-  // démarrer timer
   startTimer();
 }
 
-// gestion du clic / validation immédiate
+// CLICK RÉPONSE
 function handleAnswer(option, selectedDiv){
   clearTimer();
 
@@ -110,7 +107,7 @@ function handleAnswer(option, selectedDiv){
     if(selectedDiv) selectedDiv.classList.add("answer-correct");
     score++;
 
-    // >>> BONUS PLAY MATHS <<<
+    // >>> CALCUL BONUS PLAY MATHS <<<
     const timeTaken = (Date.now() - startTime) / 1000;
     let bonus = 0;
 
@@ -145,12 +142,10 @@ function handleAnswer(option, selectedDiv){
   }, 9000);
 }
 
-// cas timeout
+// TIMER = 0
 function forceTimeout(){
   const q = shuffledQuestions[current];
   q.userAnswer = "Aucune";
-
-  // aucun bonus en cas de timeout
 
   document.querySelectorAll(".answer").forEach(a => {
     if(a.textContent.trim() === String(q.bonne_reponse).trim()){
@@ -176,7 +171,7 @@ function forceTimeout(){
   }, 9000);
 }
 
-// ---- TIMER SVG ----
+// TIMER SVG
 function startTimer(){
   timeLeft = 30;
   const radius = 35;
@@ -208,8 +203,11 @@ function clearTimer(){
   timerInterval = null;
 }
 
-// ---- FIN DU QUIZ ----
+// =====================================
+//   FIN DU QUIZ — VERSION CORRIGÉE !!
+// =====================================
 function endQuiz(){
+
   clearTimer();
 
   if(bgMusic){ try{ bgMusic.pause(); bgMusic.currentTime = 0; } catch(e){} }
@@ -224,12 +222,17 @@ function endQuiz(){
   explanationBox.style.display = "none";
   scoreBox.textContent = `Score final : ${score} / ${shuffledQuestions.length}`;
 
-  if(typeof sendResults === "function"){
-    const user = {
-      nom: document.getElementById("nom").value.trim(),
-      prenom: document.getElementById("prenom").value.trim()
-    };
+  const user = {
+    nom: nomInput.value.trim(),
+    prenom: prenomInput.value.trim()
+  };
 
+  // >>> ENVOI DES DEUX NOTES <<<
+  // note sur 20 = score
+  // points Play Maths = playMathsPoints
+
+  if(typeof sendResults === "function"){
     sendResults(user, score, shuffledQuestions, playMathsPoints);
   }
+
 }
