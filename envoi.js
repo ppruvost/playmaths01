@@ -1,61 +1,48 @@
-
-// =============================
-// Initialisation EmailJS
-// =============================
-(function () {
-  emailjs.init("TJHX0tkW1CCz7lv7a"); // clé publique fournie
+// envoi.js - envoi EmailJS des résultats + recap
+// Initialise EmailJS (ta clé publique)
+(function(){
+  if(window.emailjs){
+    try{
+      emailjs.init("TJHX0tkW1CCz7lv7a");
+    }catch(e){
+      console.warn("EmailJS init failed", e);
+    }
+  }
 })();
 
-// Sauvegarde de la fonction endQuiz originale (définie dans questions.js)
-const oldEndQuiz = endQuiz;
+// sendResults(user, score, shuffledQuestions)
+function sendResults(user, score, shuffledQuestions){
+  // sécurité : vérifier emailjs présent
+  if(!window.emailjs){
+    console.warn("EmailJS non chargé.");
+    return;
+  }
 
-// =============================
-// Fin du quiz + Envoi EmailJS + Confettis + Jingle
-// =============================
-endQuiz = function () {
-  // Exécution normale
-  oldEndQuiz();
-
-  // Lecture du jingle
-  const sound = document.getElementById("victorySound");
-  if (sound) sound.play();
-
-  // Confettis
-  confetti({
-    particleCount: 200,
-    spread: 120,
-    startVelocity: 45,
-    origin: { y: 0.6 }
-  });
-
-  // Score final
   const scoreFinal = `${score} / ${shuffledQuestions.length}`;
 
-  // Préparation du résumé
+  // Préparer récapitulatif
   let recap = "";
   shuffledQuestions.forEach((q, i) => {
-    recap += `Q${i + 1}: ${q.question}\n`;
-    recap += `Réponse élève : ${q.userAnswer || "Aucune"}\n`;
-    recap += `Bonne réponse : ${q.bonne_reponse}\n\n`;
+    recap += `Q${i+1}: ${q.question}\n`;
+    recap += `Réponse élève: ${q.userAnswer || "Aucune"}\n`;
+    recap += `Bonne réponse: ${q.bonne_reponse}\n\n`;
   });
 
-  // Paramètres EmailJS
   const emailParams = {
-    nom: user.nom,
-    prenom: user.prenom,
+    nom: user.nom || "",
+    prenom: user.prenom || "",
     score: scoreFinal,
     details: recap,
-    email: "lyceepro.mermoz@gmail.com" // adresse professeur
+    email: "lyceepro.mermoz@gmail.com"
   };
 
-  // Envoi
-  emailjs
-    .send("service_cgh817y", "template_ly7s41e", emailParams)
+  // Remplace service/template par les tiens si besoin
+  emailjs.send("service_cgh817y", "template_ly7s41e", emailParams)
     .then(() => {
       alert("✅ Résultats envoyés automatiquement par e-mail à votre professeur. Merci !");
     })
-    .catch((error) => {
-      console.error("❌ Erreur EmailJS :", error);
-      alert("Une erreur est survenue lors de l'envoi : " + JSON.stringify(error));
+    .catch((err) => {
+      console.error("Erreur envoi EmailJS", err);
+      alert("❌ Erreur lors de l'envoi : " + (err && err.text ? err.text : JSON.stringify(err)));
     });
-};
+}
