@@ -1,164 +1,109 @@
-// =============================
-// VARIABLES GLOBALES
-// =============================
-let user = { nom: "", prenom: "" };
 let current = 0;
 let score = 0;
-let shuffledQuestions = [];
 let timerInterval;
-let timeLeft = 30;
 
-// =============================
-// LANCEMENT DU QUIZ
-// =============================
-document.getElementById("startQuiz").addEventListener("click", () => {
-    const nom = document.getElementById("nom").value.trim();
-    const prenom = document.getElementById("prenom").value.trim();
+const questionBox = document.getElementById("questionBox");
+const answerGrid = document.getElementById("answerGrid");
+const explanationBox = document.getElementById("explanationBox"); // ajouter dans HTML
+const timerNumber = document.getElementById("timerNumber");
 
-    if (!nom || !prenom) {
-        alert("Merci d’entrer votre nom et prénom avant de commencer !");
-        return;
-    }
+// =============== Chargement question ===============
+function loadQuestion() {
+    const q = questions[current];
 
-    user = { nom, prenom };
-    document.getElementById("userForm").style.display = "none";
+    questionBox.textContent = `${current + 1}. ${q.question}`;
+    explanationBox.style.display = "none"; // cacher explication
+    answerGrid.innerHTML = "";
 
-    startQuiz();
-});
+    q.options.forEach(option => {
+        const div = document.createElement("div");
+        div.classList.add("answer");
 
-// =============================
-// START QUIZ
-// =============================
-function startQuiz() {
-    score = 0;
-    current = 0;
+        // couleurs fixes pour cohérence
+        const colors = ["red", "blue", "yellow", "green"];
+        const color = colors[answerGrid.children.length];
+        div.classList.add(color);
 
-    if (!questions || questions.length === 0) {
-        alert("ERREUR : questions.js n’a pas chargé !");
-        return;
-    }
+        div.innerHTML = `
+            <span class="shape"></span>
+            <span>${option}</span>
+        `;
 
-    shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
-
-    showQuestion();
-}
-
-// =============================
-// AFFICHAGE QUESTION
-// =============================
-function showQuestion() {
-    const q = shuffledQuestions[current];
-
-    const colors = ["red", "blue", "yellow", "green"];
-
-    const html = `
-        <div class="question-box">${q.question}</div>
-
-        <div class="answer-grid">
-            ${q.options.map((opt, i) => `
-                <div class="answer ${colors[i]}" onclick="selectAnswer(this)"
-                     ${opt === q.bonne_reponse ? "data-correct='true'" : ""}>
-                     ${opt}
-                </div>
-            `).join("")}
-        </div>
-
-        <button class="start-btn" onclick="validateAnswer()">Valider</button>
-        <div id="explication"></div>
-    `;
-
-    document.getElementById("quiz").innerHTML = html;
+        div.addEventListener("click", () => handleAnswer(option, div));
+        answerGrid.appendChild(div);
+    });
 
     startTimer();
 }
 
-// =============================
-// SÉLECTION
-// =============================
-function selectAnswer(elem) {
-    document.querySelectorAll(".answer").forEach(a => a.classList.remove("selected"));
-    elem.classList.add("selected");
-}
+// =============== Gestion de réponse ===============
+function handleAnswer(option, selectedDiv) {
+    const correct = questions[current].bonne_reponse;
 
-// =============================
-// VALIDATION
-// =============================
-function validateAnswer() {
-    const selected = document.querySelector(".answer.selected");
-    if (!selected) {
-        alert("Sélectionne une réponse !");
-        return;
-    }
+    stopTimer();
 
-    clearInterval(timerInterval);
+    // Désactiver clics
+    document.querySelectorAll(".answer").forEach(btn => {
+        btn.style.pointerEvents = "none";
+    });
 
-    const isCorrect = selected.hasAttribute("data-correct");
-
-    if (isCorrect) {
+    // Vérifier bonne/mauvaise réponse
+    if (option === correct) {
+        selectedDiv.style.backgroundColor = "#2FA344"; // vert
         score++;
-        selected.classList.add("answer-correct");
     } else {
-        selected.classList.add("answer-wrong");
-        document.querySelector("[data-correct]").classList.add("answer-correct-auto");
+        selectedDiv.style.backgroundColor = "#D92D2D"; // rouge
+
+        // Mettre en vert la bonne option
+        document.querySelectorAll(".answer").forEach(btn => {
+            if (btn.innerText.trim() === correct.trim()) {
+                btn.style.backgroundColor = "#2FA344";
+            }
+        });
     }
 
-    document.getElementById("explication").innerHTML =
-        shuffledQuestions[current].explication || "";
+    // AFFICHAGE EXPLICATION
+    explanationBox.innerHTML = `<strong>Explication :</strong> ${questions[current].explication}`;
+    explanationBox.style.display = "block";
 
-    setTimeout(nextQuestion, 1500);
+    // Attente 9 secondes avant la prochaine question
+    setTimeout(() => {
+        current++;
+        if (current < questions.length) {
+            loadQuestion();
+        } else {
+            endQuiz();
+        }
+    }, 9000);
 }
 
-// =============================
-// QUESTION SUIVANTE
-// =============================
-function nextQuestion() {
-    current++;
-
-    if (current >= shuffledQuestions.length) {
-        endQuiz();
-        return;
-    }
-
-    showQuestion();
-}
-
-// =============================
-// FIN QUIZ
-// =============================
-function endQuiz() {
-    document.getElementById("quiz").innerHTML = `
-        <h2>Bravo ${user.prenom} ! 🎉</h2>
-        <p>Score final : ${score}/${shuffledQuestions.length}</p>
-    `;
-
-    document.getElementById("victorySound").play();
-}
-
-// =============================
-// TIMER SVG
-// =============================
+// =============== Timer circulaire ou numérique ===============
 function startTimer() {
-    timeLeft = 30;
-
-    const circle = document.getElementById("timer-circle");
-    const circumference = 2 * Math.PI * 35;
-
-    circle.style.strokeDasharray = circumference;
-    circle.style.strokeDashoffset = "0";
-    circle.style.stroke = "#3498db";
-    circle.style.strokeWidth = "6";
-    circle.style.fill = "none";
+    let timeLeft = 30;
+    timerNumber.textContent = timeLeft;
 
     timerInterval = setInterval(() => {
         timeLeft--;
-        document.getElementById("timer-text").textContent = timeLeft;
-
-        const offset = circumference - (timeLeft / 30) * circumference;
-        circle.style.strokeDashoffset = offset;
+        timerNumber.textContent = timeLeft;
 
         if (timeLeft <= 0) {
             clearInterval(timerInterval);
-            validateAnswer();
+            forceTimeout();
         }
     }, 1000);
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+}
+
+function forceTimeout() {
+    handleAnswer("Aucune réponse", null); // fausse réponse
+}
+
+// =============== Fin du quiz ===============
+function endQuiz() {
+    questionBox.textContent = `Quiz terminé ! Score : ${score}/${questions.length}`;
+    answerGrid.innerHTML = "";
+    explanationBox.style.display = "none";
 }
