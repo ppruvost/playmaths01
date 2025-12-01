@@ -1,282 +1,101 @@
-/* ===============================
-   STYLE GLOBAL DYS-FRIENDLY
-=============================== */
+/* ----- GLOBAL ----- */
 body {
-  font-family: "Lexend", Verdana, Arial, sans-serif;
-  background: #f3f5ff;
-  margin: 0;
-  padding: 0;
-  line-height: 1.6;
-  font-size: 18px;
+    margin: 0;
+    font-family: "Montserrat", sans-serif;
+    background: #1c1e26;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
-.container {
-  max-width: 750px;
-  margin: 40px auto;
-  background: #ffffff;
-  padding: 32px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  animation: fadeIn 0.5s ease;
+/* ----- CONTAINER PRINCIPAL ----- */
+.kahoot-container {
+    width: 90%;
+    max-width: 1200px;
 }
 
-/* ===============================
-   TITRES
-=============================== */
-h1 {
-  color: #1b2a78;
-  text-align: center;
-  margin-bottom: 15px;
-  letter-spacing: 0.5px;
+/* ----- QUESTION ----- */
+.question-box {
+    background: rgba(255,255,255,0.20);
+    padding: 15px 25px;
+    text-align: center;
+    border-radius: 12px;
+    color: white;
+    font-weight: 700;
+    margin-bottom: 20px;
+    backdrop-filter: blur(10px);
 }
 
-h1::after {
-  content: attr(data-title);
-  display: block;
-  font-size: 0.8em;
-  margin-top: 4px;
-  color: #3c4fc9;
-  opacity: 0.85;
+/* ----- GRILLE DES CHOIX ----- */
+.answer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
 }
 
-h2 {
-  text-align: center;
-  color: #1b2a78;
+/* ----- BOUTONS ----- */
+.answer {
+    display: flex;
+    align-items: center;
+    padding: 25px;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.4em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.15s ease-in-out;
+    position: relative;
+    overflow: hidden;
 }
 
-/* ===============================
-   PARAGRAPHES
-=============================== */
-.intro {
-  font-size: 1.1em;
-  color: #333;
-  margin-bottom: 20px;
+/* ----- Icônes Kahoot ----- */
+.answer::before {
+    content: "";
+    width: 30px;
+    height: 30px;
+    margin-right: 18px;
+    background: white;
+    display: inline-block;
 }
 
-/* ===============================
-   FORMULAIRE IDENTITÉ
-=============================== */
-#userForm {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-bottom: 20px;
+/* Formes géométriques — version fidèle */
+.answer.red::before { 
+    clip-path: polygon(50% 0, 0 100%, 100% 100%);
+} /* triangle */
+
+.answer.blue::before {
+    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+} /* losange */
+
+.answer.yellow::before {
+    border-radius: 50%;
+} /* cercle */
+
+.answer.green::before {
+    border-radius: 3px;
+} /* carré */
+
+/* ----- COULEURS ----- */
+.red { background: #D92D2D; }
+.blue { background: #2369E2; }
+.yellow { background: #E5A61C; }
+.green { background: #2FA344; }
+
+/* ----- HOVER ----- */
+.answer:hover {
+    filter: brightness(1.15);
+    transform: scale(1.03);
 }
 
-#userForm label {
-  font-weight: bold;
-  color: #1b2a78;
-}
+/* ----- RESPONSIVE ----- */
+@media (max-width: 768px) {
+    .answer {
+        font-size: 1.1em;
+        padding: 18px;
+    }
 
-#userForm input {
-  padding: 12px;
-  border: 2px solid #c7d0ff;
-  border-radius: 10px;
-  font-size: 1em;
-}
-
-#userForm input:focus {
-  border-color: #1b2a78;
-  outline: none;
-}
-
-/* ===============================
-   TIMER
-=============================== */
-#timer-container {
-  position: relative;
-  width: 80px;
-  height: 80px;
-  margin: 20px auto;
-}
-
-#timer-svg {
-  transform: rotate(-90deg);
-}
-
-#timer-circle {
-  fill: none;
-  stroke: #ff4444;
-  stroke-width: 6;
-  stroke-linecap: round;
-  stroke-dasharray: 220; /* périmètre du cercle */
-  stroke-dashoffset: 0;
-  transition: stroke-dashoffset 1s linear;
-}
-
-#timer-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 22px;
-  font-weight: bold;
-}
-
-/* ===============================
-   QUESTIONS
-=============================== */
-.question {
-  font-size: 1.3em;
-  font-weight: bold;
-  margin-bottom: 16px;
-  color: #1b2763;
-}
-
-/* Animation d'entrée */
-.pop-in {
-  animation: popIn 0.45s ease;
-}
-
-@keyframes popIn {
-  0% { opacity: 0; transform: scale(0.8); }
-  60% { opacity: 1; transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-
-/* ===============================
-   OPTIONS (style Kahoot)
-=============================== */
-.options {
-  margin-top: 20px;
-}
-
-.options label.option-card {
-  display: block;
-  background: #eef1ff;
-  border: 3px solid transparent;
-  border-radius: 14px;
-  padding: 14px 18px;
-  margin-bottom: 16px;
-  cursor: pointer;
-  transition: 0.25s ease;
-  font-size: 1.05em;
-  position: relative;
-}
-
-.options label.option-card:hover {
-  background: #d7ddff;
-}
-
-/* radios visibles */
-input[type="radio"] {
-  transform: scale(1.5);
-  margin-right: 12px;
-  cursor: pointer;
-}
-
-/* ===============================
-   ANIMATIONS VALIDATION KAHOOT
-=============================== */
-.answer-selected {
-  animation: pulse 0.3s ease;
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.08); }
-  100% { transform: scale(1); }
-}
-
-/* BONNE réponse */
-.answer-correct,
-.answer-correct-auto {
-  background: #9af5a3 !important;
-  border-color: #2b8a3e !important;
-  animation: flashGreen 0.5s ease;
-}
-
-@keyframes flashGreen {
-  0% { box-shadow: 0 0 0 rgba(43,138,62,0.1); }
-  100% { box-shadow: 0 0 18px rgba(43,138,62,0.6); }
-}
-
-/* MAUVAISE réponse */
-.answer-wrong {
-  background: #ffb3b3 !important;
-  border-color: #c62828 !important;
-  animation: flashRed 0.5s ease;
-}
-
-@keyframes flashRed {
-  0% { box-shadow: 0 0 0 rgba(198,40,40,0.1); }
-  100% { box-shadow: 0 0 18px rgba(198,40,40,0.6); }
-}
-
-/* ===============================
-   BOUTONS
-=============================== */
-button.validate {
-  font-size: 1.4em;
-  padding: 18px 28px;
-  border-radius: 14px;
-  background: #5c7dff;
-  color: white;
-  cursor: pointer;
-  width: 100%;
-  margin-top: 20px;
-}
-
-button.validate:hover {
-  background: #455ecc;
-}
-
-.button {
-  display: inline-block;
-  width: 100%;
-  padding: 16px;
-  background: #1b2a78;
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  font-size: 1.25em;
-  cursor: pointer;
-  margin-top: 22px;
-  transition: 0.25s;
-  letter-spacing: 0.5px;
-}
-
-.button:hover {
-  background: #14205a;
-}
-
-.start { background: #5c7dff; }
-.start:hover { background: #455ecc; }
-
-.next { background: #69c77b; }
-.next:hover { background: #4ca561; }
-
-.restart { background: #ff7b72; }
-.restart:hover { background: #d85a54; }
-
-/* ===============================
-   SCORE & EXPLICATIONS
-=============================== */
-.score {
-  font-size: 1.4em;
-  color: #1b2a78;
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.explication {
-  background: #eef3ff;
-  border-left: 6px solid #1b2a78;
-  padding: 14px 18px;
-  margin-bottom: 16px;
-  border-radius: 10px;
-  font-size: 1.05em;
-}
-
-/* ===============================
-   UTILITAIRES
-=============================== */
-.hidden {
-  display: none;
-}
-
-/* Fade global */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+    .answer-grid {
+        grid-template-columns: 1fr;
+    }
 }
