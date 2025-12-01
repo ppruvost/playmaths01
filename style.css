@@ -2,28 +2,30 @@
 body {
     margin: 0;
     font-family: "Montserrat", sans-serif;
-    background: #1c1e26;
+    background: #f5f5f5; /* Fond clair */
+    color: #222; /* Texte sombre */
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
+    align-items: flex-start;
+    padding-top: 40px;
+    min-height: 100vh;
 }
 
 /* ----- START BOUTON ----- */
 .start-btn {
-    padding: 12px 25px;       /* Agrandit le bouton */
-    font-size: 18px;          /* Texte plus grand */
-    border-radius: 8px;       /* Coins arrondis */
-    background-color: #4CAF50; /* Couleur plus visible */
-    color: white;             /* Texte blanc */
-    border: none;             /* Retire la bordure par défaut */
-    cursor: pointer;          /* Curseur interactif */
-    transition: 0.2s ease;    /* Animation au survol */
+    padding: 12px 25px;
+    font-size: 18px;
+    border-radius: 8px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s ease;
 }
 
 .start-btn:hover {
-    background-color: #45a049;
-    transform: scale(1.05);   /* Légère augmentation au survol */
+    background-color: #3e8e41;
+    transform: scale(1.05);
 }
 
 /* ----- CONTAINER PRINCIPAL ----- */
@@ -34,3 +36,76 @@ body {
 
 /* ----- QUESTION ----- */
 .question-box {
+    background: #e0e0e0;
+    padding: 15px 25px;
+    text-align: center;
+    border-radius: 12px;
+    color: #000;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* ----- GRILLE DES CHOIX ----- */
+.answer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+/* ----- BOUTONS ----- */
+.answer {
+    display: flex;
+    align-items: center;
+    padding: 25px;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.4em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.15s ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Icônes */
+.answer::before {
+    content: "";
+    width: 30px;
+    height: 30px;
+    margin-right: 18px;
+    background: white;
+    display: inline-block;
+}
+
+/* Formes */
+.answer.red::before { 
+    clip-path: polygon(50% 0, 0 100%, 100% 100%);
+}
+.answer.blue::before {
+    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+.answer.yellow::before {
+    border-radius: 50%;
+}
+.answer.green::before {
+    border-radius: 3px;
+}
+
+/* Couleurs */
+.red { background: #D92D2D; }
+.blue { background: #2369E2; }
+.yellow { background: #E5A61C; color: black; }
+.green { background: #2FA344; }
+
+/* Hover */
+.answer:hover {
+    filter: brightness(1.12);
+    transform: scale(1.03);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .answer-grid {
+        grid-template-columns: 1fr;
+    }
+}
