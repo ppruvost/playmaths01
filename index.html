@@ -1,44 +1,70 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Quiz Kahoot</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quiz Play Maths</title>
 
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Confettis -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
+
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js" defer></script>
+</head>
 <body>
 
-<div class="kahoot-container">
+  <main class="page">
 
-    <h1>Application au contexte professionnel</h1>
-    <p>Testez vos connaissances avec le quiz interactif !</p>
+    <header class="header">
+      <h1>Application au contexte professionnel — Quiz</h1>
+      <div class="user-info" id="userForm">
+        <input id="nom" type="text" placeholder="Nom" />
+        <input id="prenom" type="text" placeholder="Prénom" />
+        <button id="startQuiz" class="start">🎮 Commencer le quiz</button>
+      </div>
+    </header>
 
-    <!-- FORMULAIRE UTILISATEUR -->
-    <div id="userForm">
-        <input type="text" id="nom" placeholder="Nom">
-        <input type="text" id="prenom" placeholder="Prénom">
+    <section class="kahoot-container">
 
-        <button id="startQuiz" class="start">Commencer</button>
-    </div>
-
-    <!-- TIMER SVG -->
-    <div id="timerContainer" style="margin-top: 25px;">
-        <svg width="100" height="100">
-            <circle id="timer-circle" cx="50" cy="50" r="35"></circle>
+      <!-- Timer + circle -->
+      <div class="timer-and-count">
+        <svg width="80" height="80" viewBox="0 0 80 80" class="timer-svg">
+          <circle id="timer-circle" cx="40" cy="40" r="35"></circle>
         </svg>
-        <div id="timer-text" style="font-size: 22px;">30</div>
-    </div>
+        <div id="timerNumber" class="timer-number">30</div>
+      </div>
 
-    <!-- ZONE QUIZ -->
-    <div id="quiz" style="margin-top:20px;"></div>
+      <!-- Questions -->
+      <div id="questionBox" class="question-box">Appuyez sur "Commencer le quiz" pour lancer.</div>
 
-    <audio id="victorySound" src="victory.mp3"></audio>
+      <!-- Réponses -->
+      <div id="answerGrid" class="answer-grid"></div>
 
-</div>
+      <!-- Explication pédagogique -->
+      <div id="explanationBox" class="explanation" style="display:none;"></div>
 
-<!-- SCRIPTS -->
-<script src="questions.js"></script>
-<script src="quiz.js"></script>
-<script src="envoi.js"></script>
+      <!-- Score -->
+      <div id="scoreBox" class="score-box"></div>
+
+    </section>
+
+    <!-- Sons -->
+    <audio id="bgMusic" src="musique.mp3" preload="auto" loop></audio>
+    <audio id="victorySound" src="jingle.wav" preload="auto"></audio>
+
+  </main>
+
+  <!-- QUESTIONS - fichier questions.js -->
+  <script src="questions.js" defer></script>
+
+  <!-- QUIZ logic -->
+  <script src="quiz.js" defer></script>
+
+  <!-- ENVOI (EmailJS) -->
+  <script src="envoi.js" defer></script>
+
 </body>
 </html>
