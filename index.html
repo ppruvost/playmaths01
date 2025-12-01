@@ -4,14 +4,10 @@
   <meta charset="UTF-8">
   <title>Quiz - Play maths 01</title>
 
-  <!-- Police DYS-friendly -->
   <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 
-  <!-- Confettis -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
-
-  <!-- EmailJS -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js" defer></script>
 </head>
 
@@ -35,21 +31,16 @@
 
     <!-- ZONE STYLE KAHOOT -->
     <div class="kahoot-container">
+
+      <!-- Question -->
       <div class="question-box" id="previewQuestion"></div>
 
-      <div class="answer-grid">
-        <div class="answer red">Bonne</div>
-        <div class="answer blue">Super</div>
-        <div class="answer yellow">Au top</div>
-        <div class="answer green">Génial</div>
-      </div>
+      <!-- Réponses dynamiques -->
+      <div id="answers" class="answer-grid"></div>
+
     </div>
 
-    <!-- SON PENDANT LE QUIZ -->
     <audio id="bgMusic" src="musique.mp3" loop></audio>
-
-    <!-- ZONE DU QUIZ -->
-    <div id="quiz" class="hidden"></div>
 
     <p id="score" class="score"></p>
 
@@ -61,11 +52,10 @@
       <div id="timer-text">30</div>
     </div>
 
-  </div> <!-- Fin container principal -->
+  </div>
 
-  <!-- SON DE VICTOIRE -->
   <audio id="victorySound" src="jingle.wav" preload="auto"></audio>
-
+  
   <!-- Scripts -->
   <script src="questions.js" defer></script>
   <script src="quiz.js" defer></script>
