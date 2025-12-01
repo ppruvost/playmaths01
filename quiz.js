@@ -7,8 +7,8 @@ let timerInterval = null;
 let timeLeft = 30;
 
 // >>> BONUS PLAY MATHS <<<
-let startTime = 0;            
-let playMathsPoints = 0;      
+let startTime = 0;
+let playMathsPoints = 0;
 // <<< FIN BONUS >>>
 
 // éléments DOM
@@ -84,10 +84,7 @@ function showQuestion(){
     answerGrid.appendChild(d);
   });
 
-  // >>> START chrono pour bonus <<<
-  startTime = Date.now();
-  // <<< FIN >>>
-
+  startTime = Date.now();  // chrono bonus
   startTimer();
 }
 
@@ -107,7 +104,7 @@ function handleAnswer(option, selectedDiv){
     if(selectedDiv) selectedDiv.classList.add("answer-correct");
     score++;
 
-    // >>> CALCUL BONUS PLAY MATHS <<<
+    // BONUS PLAY MATHS
     const timeTaken = (Date.now() - startTime) / 1000;
     let bonus = 0;
 
@@ -116,7 +113,6 @@ function handleAnswer(option, selectedDiv){
     else if(timeTaken < 10) bonus = 1;
 
     playMathsPoints += bonus;
-    // <<< FIN BONUS >>>
 
   } else {
     if(selectedDiv) selectedDiv.classList.add("answer-wrong");
@@ -142,7 +138,7 @@ function handleAnswer(option, selectedDiv){
   }, 9000);
 }
 
-// TIMER = 0
+// TIMEOUT
 function forceTimeout(){
   const q = shuffledQuestions[current];
   q.userAnswer = "Aucune";
@@ -189,7 +185,7 @@ function startTimer(){
     const offset = circumference - (timeLeft / 30) * circumference;
     timerCircle.style.strokeDashoffset = offset;
 
-    timerCircle.style.stroke = (timeLeft <= 10 ? "#f39c12" : "#3498db");
+    timerCircle.style.stroke = (timeLeft <= 10 ? "#f39c12" : "#3498db`);
 
     if(timeLeft <= 0){
       clearInterval(timerInterval);
@@ -203,9 +199,9 @@ function clearTimer(){
   timerInterval = null;
 }
 
-// =====================================
-//   FIN DU QUIZ — VERSION CORRIGÉE !!
-// =====================================
+// ==============================
+//     FIN DU QUIZ — CORRIGÉ
+// ==============================
 function endQuiz(){
 
   clearTimer();
@@ -217,22 +213,22 @@ function endQuiz(){
     confetti && confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
   }catch(e){}
 
-  questionBox.textContent = `Quiz terminé ! Score final : ${score} / ${shuffledQuestions.length}`;
+  const total = shuffledQuestions.length;
+  const noteSur20 = Math.round((score / total) * 20);
+
+  questionBox.textContent = `Quiz terminé ! Score final : ${score} / ${total} (Note : ${noteSur20}/20)`;
   answerGrid.innerHTML = "";
   explanationBox.style.display = "none";
-  scoreBox.textContent = `Score final : ${score} / ${shuffledQuestions.length}`;
+  scoreBox.textContent = `Score final : ${score} / ${total}`;
 
   const user = {
     nom: nomInput.value.trim(),
     prenom: prenomInput.value.trim()
   };
 
-  // >>> ENVOI DES DEUX NOTES <<<
-  // note sur 20 = score
-  // points Play Maths = playMathsPoints
-
+  // 👉 ENVOI COMPLÈT COMPLET À EmailJS
   if(typeof sendResults === "function"){
-    sendResults(user, score, shuffledQuestions, playMathsPoints);
+    sendResults(user, score, total, noteSur20, playMathsPoints, shuffledQuestions);
   }
 
 }
