@@ -7,8 +7,8 @@ let timerInterval = null;
 let timeLeft = 30;
 
 // >>> AJOUT PLAY MATHS <<<
-let startTime = 0;             // début chrono question
-let playMathsPoints = 0;       // points Play Maths cumulés
+let startTime = 0;            // début chrono question
+let playMathsPoints = 0;      // points Play Maths cumulés
 // <<< FIN AJOUT <<<
 
 // éléments DOM
@@ -32,6 +32,7 @@ function shuffleArray(arr){
 
 // start
 startBtn.addEventListener("click", () => {
+
   const nom = nomInput.value.trim();
   const prenom = prenomInput.value.trim();
   if(!nom){ nomInput.focus(); return; }
@@ -40,25 +41,22 @@ startBtn.addEventListener("click", () => {
   // initialisation
   score = 0;
   current = 0;
-  playMathsPoints = 0;   // <<< IMPORTANT : reset du bonus
+  playMathsPoints = 0;   // reset bonus
 
-  // clone et mélange des questions
   if(!Array.isArray(questions) || questions.length === 0){
     alert("Erreur : questions introuvables. Vérifie questions.js");
     return;
   }
+
   shuffledQuestions = shuffleArray(questions);
 
-  // démarrer musique si présente (tentative)
   if(bgMusic){
     bgMusic.volume = 0.35;
     bgMusic.play().catch(()=>{});
   }
 
-  // masquer le formulaire
   document.getElementById("userForm").style.display = "none";
 
-  // afficher première question
   showQuestion();
 });
 
@@ -72,20 +70,17 @@ function showQuestion(){
     return;
   }
 
-  // affichage
   questionBox.textContent = `${current + 1}. ${q.question}`;
   explanationBox.style.display = "none";
   explanationBox.innerHTML = "";
   answerGrid.innerHTML = "";
 
-  // construire options
   const colors = ["red","blue","yellow","green"];
   q.options.forEach((opt, idx) => {
     const d = document.createElement("div");
     d.className = `answer ${colors[idx % colors.length]}`;
     d.textContent = opt;
 
-    // clic direct -> validation immédiate
     d.addEventListener("click", () => handleAnswer(opt, d));
 
     answerGrid.appendChild(d);
@@ -106,10 +101,8 @@ function handleAnswer(option, selectedDiv){
   const q = shuffledQuestions[current];
   q.userAnswer = option || "Aucune";
 
-  // désactiver clics
   document.querySelectorAll(".answer").forEach(a => a.style.pointerEvents = "none");
 
-  // montrer la bonne réponse et feedback
   const correct = q.bonne_reponse;
   const isCorrect = option === correct;
 
@@ -137,7 +130,6 @@ function handleAnswer(option, selectedDiv){
     });
   }
 
-  // afficher explication
   explanationBox.innerHTML = `<strong>Explication :</strong> ${q.explication || ""}`;
   explanationBox.style.display = "block";
 
@@ -158,8 +150,7 @@ function forceTimeout(){
   const q = shuffledQuestions[current];
   q.userAnswer = "Aucune";
 
-  // aucune augmentation du score
-  // >>> pas de bonus Play Maths en cas de timeout <<<
+  // aucun bonus en cas de timeout
 
   document.querySelectorAll(".answer").forEach(a => {
     if(a.textContent.trim() === String(q.bonne_reponse).trim()){
@@ -195,6 +186,7 @@ function startTimer(){
   timerCircle.style.stroke = "#e0e0e0";
 
   timerNumber.textContent = timeLeft;
+
   timerInterval = setInterval(() => {
     timeLeft--;
     timerNumber.textContent = timeLeft;
@@ -202,11 +194,7 @@ function startTimer(){
     const offset = circumference - (timeLeft / 30) * circumference;
     timerCircle.style.strokeDashoffset = offset;
 
-    if(timeLeft <= 10){
-      timerCircle.style.stroke = "#f39c12";
-    } else {
-      timerCircle.style.stroke = "#3498db";
-    }
+    timerCircle.style.stroke = (timeLeft <= 10 ? "#f39c12" : "#3498db");
 
     if(timeLeft <= 0){
       clearInterval(timerInterval);
@@ -236,15 +224,12 @@ function endQuiz(){
   explanationBox.style.display = "none";
   scoreBox.textContent = `Score final : ${score} / ${shuffledQuestions.length}`;
 
-  // appel envoi des résultats (envoi.js)
   if(typeof sendResults === "function"){
     const user = {
       nom: document.getElementById("nom").value.trim(),
       prenom: document.getElementById("prenom").value.trim()
     };
 
-    // >>> AJOUT PLAY MATHS DANS L’ENVOI <<<
     sendResults(user, score, shuffledQuestions, playMathsPoints);
-    // <<< FIN AJOUT <<<
   }
 }
