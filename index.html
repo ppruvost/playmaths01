@@ -1,65 +1,44 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Quiz - Play maths 01</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js" defer></script>
+    <meta charset="UTF-8">
+    <title>Quiz Kahoot</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <div class="container" id="container">
+<div class="kahoot-container">
 
-    <h1 data-title="Niveau 2nde Pro">Application au contexte professionnel</h1>
-    <p class="intro">Testez vos connaissances avec le quiz interactif !</p>
+    <h1>Application au contexte professionnel</h1>
+    <p>Testez vos connaissances avec le quiz interactif !</p>
 
-    <!-- Formulaire identité -->
+    <!-- FORMULAIRE UTILISATEUR -->
     <div id="userForm">
-      <label for="nom">Nom :</label>
-      <input type="text" id="nom" name="nom" placeholder="Entrez votre nom" required>
+        <input type="text" id="nom" placeholder="Nom">
+        <input type="text" id="prenom" placeholder="Prénom">
 
-      <label for="prenom">Prénom :</label>
-      <input type="text" id="prenom" name="prenom" placeholder="Entrez votre prénom" required>
-
-      <button class="button start" id="startQuiz">🎮 Commencer le quiz</button>
+        <button id="startQuiz" class="start">Commencer</button>
     </div>
 
-    <!-- ZONE STYLE KAHOOT -->
-    <div class="kahoot-container">
-
-      <!-- Question -->
-      <div class="question-box" id="previewQuestion"></div>
-
-      <!-- Réponses dynamiques -->
-      <div id="answers" class="answer-grid"></div>
-
+    <!-- TIMER SVG -->
+    <div id="timerContainer" style="margin-top: 25px;">
+        <svg width="100" height="100">
+            <circle id="timer-circle" cx="50" cy="50" r="35"></circle>
+        </svg>
+        <div id="timer-text" style="font-size: 22px;">30</div>
     </div>
 
-    <audio id="bgMusic" src="musique.mp3" loop></audio>
+    <!-- ZONE QUIZ -->
+    <div id="quiz" style="margin-top:20px;"></div>
 
-    <p id="score" class="score"></p>
+    <audio id="victorySound" src="victory.mp3"></audio>
 
-    <!-- TIMER -->
-    <div id="timer-container">
-      <svg id="timer-svg" width="80" height="80">
-        <circle id="timer-circle" cx="40" cy="40" r="35"></circle>
-      </svg>
-      <div id="timer-text">30</div>
-    </div>
+</div>
 
-  </div>
-
-  <audio id="victorySound" src="jingle.wav" preload="auto"></audio>
-  
-  <!-- Scripts -->
-  <script src="questions.js" defer></script>
-  <script src="quiz.js" defer></script>
-  <script src="envoi.js" defer></script>
-
+<!-- SCRIPTS -->
+<script src="questions.js"></script>
+<script src="quiz.js"></script>
+<script src="envoi.js"></script>
 </body>
 </html>
