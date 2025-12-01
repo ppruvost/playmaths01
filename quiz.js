@@ -1,193 +1,115 @@
 // =============================
-// GESTION DE SESSION POUR RECOMMENCER LE QUIZ
+// VARIABLES GLOBALES
 // =============================
-window.addEventListener("load", () => {
-    const currentPage = window.location.pathname.split("/").pop();
-    if (sessionStorage.getItem("quizStarted") && currentPage !== "index.html") {
-        resetQuizSession();
-    } else {
-        sessionStorage.setItem("quizStarted", "true");
-    }
-});
-
-function resetQuizSession() {
-    sessionStorage.removeItem("quizStarted");
-    sessionStorage.removeItem("currentQuestion");
-    sessionStorage.removeItem("score");
-    sessionStorage.removeItem("shuffledQuestions");
-
-    if (window.location.pathname.split("/").pop() !== "index.html") {
-        window.location.href = "index.html";
-    }
-}
-
-// =============================
-// SYSTEME ANTI-TRICHE
-// =============================
-document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden") resetQuizSession();
-});
-window.addEventListener("blur", resetQuizSession);
-document.addEventListener("contextmenu", (e) => e.preventDefault());
-document.addEventListener("keydown", (e) => {
-    const blocked =
-        e.key === "F12" ||
-        (e.ctrlKey && e.shiftKey && ["I","J"].includes(e.key.toUpperCase())) ||
-        (e.ctrlKey && e.key.toUpperCase() === "U");
-
-    if (blocked) {
-        e.preventDefault();
-        resetQuizSession();
-    }
-});
-
-// =============================
-// MUSIQUE
-// =============================
-function startMusic() {
-    const audio = document.getElementById("bgMusic");
-    if (!audio) return;
-    audio.volume = 0.4;
-    audio.play().catch(()=>{});
-}
-function stopMusic() {
-    const audio = document.getElementById("bgMusic");
-    if (!audio) return;
-    audio.pause();
-    audio.currentTime = 0;
-}
-
-// =============================
-// TIMER
-// =============================
-let timerInterval;
-let timeLeft = 30;
-const FULL_DASH = 220;
-
-function startTimer() {
-    timeLeft = 30;
-    updateTimerText(timeLeft);
-    updateCircle(timeLeft);
-
-    clearInterval(timerInterval);
-
-    timerInterval = setInterval(() => {
-        timeLeft--;
-        updateTimerText(timeLeft);
-        updateCircle(timeLeft);
-
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            autoValidateAndNext();
-        }
-    }, 1000);
-}
-
-function updateTimerText(v) {
-    const t = document.getElementById("timer-text");
-    if (t) t.textContent = v;
-}
-function updateCircle(sec) {
-    const c = document.getElementById("timer-circle");
-    if (!c) return;
-    const ratio = sec / 30;
-    c.style.strokeDashoffset = FULL_DASH * (1 - ratio);
-}
-
-function autoValidateAndNext() {
-    const correct = document.querySelector(".answer[data-correct='true']");
-    if (correct) correct.classList.add("answer-correct-auto");
-
-    setTimeout(() => nextQuestion(), 1000);
-}
-
-// =============================
-// VARIABLES
-// =============================
-let user = { nom:"", prenom:"" };
+let user = { nom: "", prenom: "" };
 let current = 0;
 let score = 0;
 let shuffledQuestions = [];
+let timerInterval;
+let timeLeft = 30;
 
-function shuffleArray(arr) {
-    const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i+1));
-        [a[i], a[j]] = [a[j], a[i]];
+// =============================
+// LANCEMENT DU QUIZ
+// =============================
+document.getElementById("startQuiz").addEventListener("click", () => {
+    const nom = document.getElementById("nom").value.trim();
+    const prenom = document.getElementById("prenom").value.trim();
+
+    if (!nom || !prenom) {
+        alert("Merci d’entrer votre nom et prénom avant de commencer !");
+        return;
     }
-    return a;
-}
 
-function shuffleQuestions() {
-    return questions.map(q => ({
-        ...q,
-        options: shuffleArray(q.options)
-    }));
+    user.nom = nom;
+    user.prenom = prenom;
+
+    document.getElementById("userForm").style.display = "none";
+
+    startQuiz();
+});
+
+function startQuiz() {
+    score = 0;
+    current = 0;
+
+    shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
+
+    showQuestion();
 }
 
 // =============================
-// AFFICHE QUESTION STYLE KAHOOT
+// AFFICHER UNE QUESTION
 // =============================
 function showQuestion() {
-    const q = shuffledQuestions[current];
+    const question = shuffledQuestions[current];
 
-    document.getElementById("previewQuestion").textContent = q.question;
+    const colors = ["red", "blue", "yellow", "green"];
 
-    const answersBox = document.getElementById("answers");
-    answersBox.innerHTML = "";
+    const optionsHTML = question.options.map((option, index) => {
+        const isCorrect = option === question.bonne_reponse ? "data-correct='true'" : "";
+        const color = colors[index % 4];
 
-    const colors = ["red","blue","yellow","green"];
+        return `
+            <div class="answer ${color}" onclick="selectAnswer(this)" ${isCorrect}>
+                ${option}
+            </div>
+        `;
+    }).join("");
 
-    q.options.forEach((opt, i) => {
-        const div = document.createElement("div");
-        div.classList.add("answer", colors[i]);
-        div.textContent = opt;
+    document.getElementById("quiz").innerHTML = `
+        <div class="question-box">${question.question}</div>
 
-        if (opt === q.bonne_reponse) {
-            div.dataset.correct = "true";
-        }
+        <div class="answer-grid">
+            ${optionsHTML}
+        </div>
 
-        div.addEventListener("click", () => validateAnswer(opt));
-
-        answersBox.appendChild(div);
-    });
+        <button class="start-btn" onclick="validateAnswer()">Valider</button>
+        <div id="explication"></div>
+    `;
 
     startTimer();
 }
 
 // =============================
-// VALIDATION STYLE KAHOOT
+// SÉLECTION D’UNE RÉPONSE
 // =============================
-function validateAnswer(selectedOption) {
-    clearInterval(timerInterval);
-
-    const q = shuffledQuestions[current];
-
-    const answers = document.querySelectorAll(".answer");
-
-    answers.forEach(a => a.style.filter = "brightness(0.5)");
-
-    answers.forEach(a => {
-        if (a.textContent === q.bonne_reponse) {
-            a.classList.add("answer-correct");
-            a.style.filter = "brightness(1.3)";
-        }
+function selectAnswer(elem) {
+    document.querySelectorAll(".answer").forEach(a => {
+        a.classList.remove("selected");
     });
+    elem.classList.add("selected");
+}
 
-    if (selectedOption === q.bonne_reponse) {
-        score++;
-    } else {
-        answers.forEach(a => {
-            if (a.textContent === selectedOption) {
-                a.classList.add("answer-wrong");
-            }
-        });
+// =============================
+// VALIDATION DE RÉPONSE
+// =============================
+function validateAnswer() {
+    const selected = document.querySelector(".answer.selected");
+
+    if (!selected) {
+        alert("Sélectionne une réponse !");
+        return;
     }
 
-    setTimeout(nextQuestion, 1200);
+    clearInterval(timerInterval);
 
-    document.getElementById("score").textContent =
-        `Score : ${score} / ${shuffledQuestions.length}`;
+    const isCorrect = selected.getAttribute("data-correct") === "true";
+
+    if (isCorrect) {
+        score++;
+        selected.classList.add("answer-correct");
+    } else {
+        selected.classList.add("answer-wrong");
+        document.querySelector("[data-correct='true']")
+                .classList.add("answer-correct-auto");
+    }
+
+    document.getElementById("explication").innerHTML =
+        shuffledQuestions[current].explication
+            ? `<p>${shuffledQuestions[current].explication}</p>`
+            : "";
+
+    setTimeout(nextQuestion, 1800);
 }
 
 // =============================
@@ -195,44 +117,53 @@ function validateAnswer(selectedOption) {
 // =============================
 function nextQuestion() {
     current++;
-    if (current < shuffledQuestions.length) {
-        showQuestion();
-    } else {
+
+    if (current >= shuffledQuestions.length) {
         endQuiz();
+        return;
     }
-}
-
-// =============================
-// FIN
-// =============================
-function endQuiz() {
-    stopMusic();
-
-    document.getElementById("previewQuestion").textContent = "Quiz terminé ! 🎉";
-    document.getElementById("answers").innerHTML = "";
-    document.getElementById("score").textContent =
-        `Score final : ${score} / ${shuffledQuestions.length}`;
-
-    document.getElementById("victorySound").play();
-}
-
-// =============================
-// DEMARRAGE QUIZ
-// =============================
-document.getElementById("startQuiz").addEventListener("click", () => {
-    startMusic();
-
-    const nom = document.getElementById("nom").value.trim();
-    const prenom = document.getElementById("prenom").value.trim();
-
-    if (!nom || !prenom) return;
-
-    user = { nom, prenom };
-    shuffledQuestions = shuffleQuestions();
-    current = 0;
-    score = 0;
-
-    document.getElementById("userForm").style.display = "none";
 
     showQuestion();
-});
+}
+
+// =============================
+// FIN DU QUIZ
+// =============================
+function endQuiz() {
+    document.getElementById("quiz").innerHTML = `
+        <h2>Bravo ${user.prenom} 🎉</h2>
+        <p>Score final : <strong>${score}/${shuffledQuestions.length}</strong></p>
+    `;
+
+    // Son de victoire
+    const winSound = document.getElementById("victorySound");
+    winSound.play();
+}
+
+// =============================
+// TIMER SVG
+// =============================
+function startTimer() {
+    timeLeft = 30;
+
+    const circle = document.getElementById("timer-circle");
+    circle.style.stroke = "#3498db";
+    circle.style.strokeWidth = "6";
+    circle.style.fill = "none";
+
+    const circumference = 2 * Math.PI * 35;
+    circle.style.strokeDasharray = circumference;
+
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById("timer-text").textContent = timeLeft;
+
+        const offset = circumference - (timeLeft / 30) * circumference;
+        circle.style.strokeDashoffset = offset;
+
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            validateAnswer();
+        }
+    }, 1000);
+}
