@@ -6,7 +6,7 @@
 (function () {
   if (window.emailjs) {
     try {
-      emailjs.init("TJHX0tkW1CCz7lv7a");   // clé publique
+      emailjs.init("TJHX0tkW1CCz7lv7a"); // clé publique
     } catch (e) {
       console.warn("EmailJS init failed :", e);
     }
@@ -17,25 +17,19 @@
 // =============================
 // ENVOI DES RÉSULTATS
 // =============================
-// sendResults(user, score, shuffledQuestions, playMathsPoints)
-function sendResults(user, score, shuffledQuestions, playMathsPoints) {
+// sendResults(user, score, total, note20, playMathsPoints, questions)
+function sendResults(user, score, total, note20, playMathsPoints, questions) {
 
   if (!window.emailjs) {
     console.warn("EmailJS non chargé !");
     return;
   }
 
-  // Score sur 20
-  const scoreFinal = `${score} / ${shuffledQuestions.length}`;
-
-  // Bonus Play Maths
-  const bonusFinal = `${playMathsPoints} pts`;
-
   // =============================
   // Construction du récap
   // =============================
   let recap = "";
-  shuffledQuestions.forEach((q, i) => {
+  questions.forEach((q, i) => {
     recap += `Q${i + 1}: ${q.question}\n`;
     recap += `Réponse élève : ${q.userAnswer || "Aucune"}\n`;
     recap += `Bonne réponse : ${q.bonne_reponse}\n\n`;
@@ -47,9 +41,11 @@ function sendResults(user, score, shuffledQuestions, playMathsPoints) {
   const emailParams = {
     nom: user.nom || "",
     prenom: user.prenom || "",
-    note20: scoreFinal,              // pour {{note20}}
-    points_play_maths: bonusFinal,   // pour {{points_play_maths}}
-    details: recap,                  // pour {{details}}
+    score: score,                     // brut
+    total: total,                     // nombre de questions
+    note20: note20,                   // *** CHIFFRE, pas "x / y" ***
+    points_play_maths: playMathsPoints,
+    details: recap,
     email: "lyceepro.mermoz@gmail.com"
   };
 
