@@ -20,17 +20,23 @@ document.getElementById("startQuiz").addEventListener("click", () => {
         return;
     }
 
-    user.nom = nom;
-    user.prenom = prenom;
-
+    user = { nom, prenom };
     document.getElementById("userForm").style.display = "none";
 
     startQuiz();
 });
 
+// =============================
+// START QUIZ
+// =============================
 function startQuiz() {
     score = 0;
     current = 0;
+
+    if (!questions || questions.length === 0) {
+        alert("ERREUR : questions.js n’a pas chargé !");
+        return;
+    }
 
     shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
 
@@ -38,54 +44,47 @@ function startQuiz() {
 }
 
 // =============================
-// AFFICHER UNE QUESTION
+// AFFICHAGE QUESTION
 // =============================
 function showQuestion() {
-    const question = shuffledQuestions[current];
+    const q = shuffledQuestions[current];
 
     const colors = ["red", "blue", "yellow", "green"];
 
-    const optionsHTML = question.options.map((option, index) => {
-        const isCorrect = option === question.bonne_reponse ? "data-correct='true'" : "";
-        const color = colors[index % 4];
-
-        return `
-            <div class="answer ${color}" onclick="selectAnswer(this)" ${isCorrect}>
-                ${option}
-            </div>
-        `;
-    }).join("");
-
-    document.getElementById("quiz").innerHTML = `
-        <div class="question-box">${question.question}</div>
+    const html = `
+        <div class="question-box">${q.question}</div>
 
         <div class="answer-grid">
-            ${optionsHTML}
+            ${q.options.map((opt, i) => `
+                <div class="answer ${colors[i]}" onclick="selectAnswer(this)"
+                     ${opt === q.bonne_reponse ? "data-correct='true'" : ""}>
+                     ${opt}
+                </div>
+            `).join("")}
         </div>
 
         <button class="start-btn" onclick="validateAnswer()">Valider</button>
         <div id="explication"></div>
     `;
 
+    document.getElementById("quiz").innerHTML = html;
+
     startTimer();
 }
 
 // =============================
-// SÉLECTION D’UNE RÉPONSE
+// SÉLECTION
 // =============================
 function selectAnswer(elem) {
-    document.querySelectorAll(".answer").forEach(a => {
-        a.classList.remove("selected");
-    });
+    document.querySelectorAll(".answer").forEach(a => a.classList.remove("selected"));
     elem.classList.add("selected");
 }
 
 // =============================
-// VALIDATION DE RÉPONSE
+// VALIDATION
 // =============================
 function validateAnswer() {
     const selected = document.querySelector(".answer.selected");
-
     if (!selected) {
         alert("Sélectionne une réponse !");
         return;
@@ -93,23 +92,20 @@ function validateAnswer() {
 
     clearInterval(timerInterval);
 
-    const isCorrect = selected.getAttribute("data-correct") === "true";
+    const isCorrect = selected.hasAttribute("data-correct");
 
     if (isCorrect) {
         score++;
         selected.classList.add("answer-correct");
     } else {
         selected.classList.add("answer-wrong");
-        document.querySelector("[data-correct='true']")
-                .classList.add("answer-correct-auto");
+        document.querySelector("[data-correct]").classList.add("answer-correct-auto");
     }
 
     document.getElementById("explication").innerHTML =
-        shuffledQuestions[current].explication
-            ? `<p>${shuffledQuestions[current].explication}</p>`
-            : "";
+        shuffledQuestions[current].explication || "";
 
-    setTimeout(nextQuestion, 1800);
+    setTimeout(nextQuestion, 1500);
 }
 
 // =============================
@@ -127,17 +123,15 @@ function nextQuestion() {
 }
 
 // =============================
-// FIN DU QUIZ
+// FIN QUIZ
 // =============================
 function endQuiz() {
     document.getElementById("quiz").innerHTML = `
-        <h2>Bravo ${user.prenom} 🎉</h2>
-        <p>Score final : <strong>${score}/${shuffledQuestions.length}</strong></p>
+        <h2>Bravo ${user.prenom} ! 🎉</h2>
+        <p>Score final : ${score}/${shuffledQuestions.length}</p>
     `;
 
-    // Son de victoire
-    const winSound = document.getElementById("victorySound");
-    winSound.play();
+    document.getElementById("victorySound").play();
 }
 
 // =============================
@@ -147,12 +141,13 @@ function startTimer() {
     timeLeft = 30;
 
     const circle = document.getElementById("timer-circle");
+    const circumference = 2 * Math.PI * 35;
+
+    circle.style.strokeDasharray = circumference;
+    circle.style.strokeDashoffset = "0";
     circle.style.stroke = "#3498db";
     circle.style.strokeWidth = "6";
     circle.style.fill = "none";
-
-    const circumference = 2 * Math.PI * 35;
-    circle.style.strokeDasharray = circumference;
 
     timerInterval = setInterval(() => {
         timeLeft--;
