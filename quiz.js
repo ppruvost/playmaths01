@@ -1,12 +1,13 @@
 // =============================
 // GESTION DE SESSION POUR RECOMMENCER LE QUIZ
 // =============================
-
 window.addEventListener("load", () => {
-    if (sessionStorage.getItem("quizStarted")) {
+    const currentPage = window.location.pathname.split("/").pop(); // ex: index.html
+    if (sessionStorage.getItem("quizStarted") && currentPage !== "index.html") {
         resetQuizSession();
+    } else {
+        sessionStorage.setItem("quizStarted", "true");
     }
-    sessionStorage.setItem("quizStarted", "true");
 });
 
 function resetQuizSession() {
@@ -14,13 +15,15 @@ function resetQuizSession() {
     sessionStorage.removeItem("currentQuestion");
     sessionStorage.removeItem("score");
     sessionStorage.removeItem("shuffledQuestions");
-    window.location.href = "index.html";
+
+    if (window.location.pathname.split("/").pop() !== "index.html") {
+        window.location.href = "index.html";
+    }
 }
 
 // =============================
 // SYSTEME ANTI-TRICHE RENFORCÉ
 // =============================
-
 document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") resetQuizSession();
 });
@@ -32,8 +35,8 @@ document.addEventListener("contextmenu", (e) => e.preventDefault());
 document.addEventListener("keydown", (e) => {
     const blocked =
         e.key === "F12" ||
-        (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J")) ||
-        (e.ctrlKey && e.key === "U");
+        (e.ctrlKey && e.shiftKey && ["I", "J"].includes(e.key.toUpperCase())) ||
+        (e.ctrlKey && e.key.toUpperCase() === "U");
 
     if (blocked) {
         e.preventDefault();
@@ -47,15 +50,15 @@ function goFullScreen() {
     if (el.requestFullscreen) el.requestFullscreen();
 }
 
-/* ============================================================
-============== MUSIQUE DE FOND (STYLE KAHOOT) =================
-============================================================ */
-
+// =============================
+// MUSIQUE DE FOND (STYLE KAHOOT)
+// =============================
 function startMusic() {
     const audio = document.getElementById("bgMusic");
+    if (!audio) return;
+
     audio.volume = 0.4;
     audio.muted = false;
-
     audio.play().catch(() => {
         console.log("Lecture automatique impossible — action utilisateur requise !");
     });
@@ -63,14 +66,15 @@ function startMusic() {
 
 function stopMusic() {
     const audio = document.getElementById("bgMusic");
+    if (!audio) return;
+
     audio.pause();
     audio.currentTime = 0;
 }
 
-/* ============================================
-   TIMER ANIMÉ (CERCLE QUI SE VIDE)
-============================================ */
-
+// =============================
+// TIMER ANIMÉ (CERCLE QUI SE VIDE)
+// =============================
 let timerInterval;
 let timeLeft = 30;
 const FULL_DASH = 220; // périmètre du cercle
@@ -104,8 +108,8 @@ function updateCircle(secondsLeft) {
     const circle = document.getElementById("timer-circle");
     if (!circle) return;
 
-    const ratio = (30 - secondsLeft) / 30;
-    const offset = FULL_DASH * ratio;
+    const ratio = secondsLeft / 30;
+    const offset = FULL_DASH * (1 - ratio);
     circle.style.strokeDashoffset = offset;
 }
 
@@ -116,14 +120,13 @@ function autoValidateAndNext() {
     }
 
     setTimeout(() => {
-        nextQuestion(); // correction
+        nextQuestion();
     }, 1500);
 }
 
-/* ============================================================
-============== VARIABLES GLOBALES ============================
-============================================================ */
-
+// =============================
+// VARIABLES GLOBALES
+// =============================
 let user = { nom: "", prenom: "" };
 let current = 0;
 let score = 0;
@@ -132,10 +135,9 @@ let shuffledQuestions = [];
 const delayCorrect = 8000;
 const delayWrong = 6000;
 
-/* ============================================================
-============== FONCTIONS UTILITAIRES ==========================
-============================================================ */
-
+// =============================
+// FONCTIONS UTILITAIRES
+// =============================
 function shuffleArray(arr) {
     const a = [...arr];
     for (let i = a.length - 1; i > 0; i--) {
@@ -152,18 +154,20 @@ function shuffleQuestions() {
     }));
 }
 
-/* ============================================================
-============== AFFICHAGE QUESTIONS ============================
-============================================================ */
-
+// =============================
+// AFFICHAGE QUESTIONS
+// =============================
 function showQuestion() {
     const question = shuffledQuestions[current];
+
+    // Nettoyer anciennes classes
+    document.querySelectorAll(".option-container label").forEach(label => {
+        label.classList.remove("answer-correct", "answer-wrong", "answer-selected", "answer-correct-auto");
+    });
 
     const optionsHTML = question.options
         .map((option, index) => {
             const inputId = `q${current}_opt${index}`;
-
-            // marquer la bonne réponse pour auto highlight
             const correctAttr = option === question.bonne_reponse ? "data-correct='true'" : "";
 
             return `
@@ -182,14 +186,20 @@ function showQuestion() {
         <div id="explication"></div>
     `;
 
-    // 🔥 Lancement du timer à chaque nouvelle question
     startTimer();
 }
 
-/* ============================================================
-============== VALIDATION REPONSE =============================
-============================================================ */
+// Affichage preview première question
+window.addEventListener("DOMContentLoaded", () => {
+    const preview = document.getElementById("previewQuestion");
+    if (preview && questions.length > 0) {
+        preview.textContent = questions[0].question;
+    }
+});
 
+// =============================
+// VALIDATION REPONSE
+// =============================
 function highlightAnswer(inputElem, isCorrect) {
     const label = inputElem.nextElementSibling;
     label.classList.add(isCorrect ? "answer-correct" : "answer-wrong");
@@ -197,14 +207,14 @@ function highlightAnswer(inputElem, isCorrect) {
 
 function validateAnswer() {
     const selected = document.querySelector(`input[name="q${current}"]:checked`);
+    const explicationDiv = document.getElementById("explication");
 
     if (!selected) {
-        document.getElementById("explication").textContent =
-            "Veuillez sélectionner une réponse.";
+        explicationDiv.textContent = "Veuillez sélectionner une réponse.";
         return;
     }
 
-    clearInterval(timerInterval); // stop timer si réponse humaine
+    clearInterval(timerInterval);
 
     const q = shuffledQuestions[current];
     const userAnswer = selected.value;
@@ -215,35 +225,33 @@ function validateAnswer() {
         score++;
         highlightAnswer(selected, true);
 
-        document.getElementById("explication").innerHTML =
-            `<span class="success">Bonne réponse !</span> ${q.explication}`;
+        explicationDiv.innerHTML = `<span class="success">Bonne réponse !</span> ${q.explication}`;
 
         setTimeout(nextQuestion, delayCorrect);
     } else {
         highlightAnswer(selected, false);
 
-        document.getElementById("explication").innerHTML =
-            `<span class="fail">Mauvaise réponse.</span> ${q.explication}`;
+        explicationDiv.innerHTML = `<span class="fail">Mauvaise réponse.</span> ${q.explication}`;
 
-        document
-            .querySelectorAll(`input[name="q${current}"]`)
-            .forEach((input) => {
-                if (input.value === q.bonne_reponse) {
-                    input.nextElementSibling.classList.add("answer-correct-auto");
-                }
-            });
+        // Montrer la bonne réponse
+        document.querySelectorAll(`input[name="q${current}"]`).forEach((input) => {
+            if (input.value === q.bonne_reponse) {
+                input.nextElementSibling.classList.add("answer-correct-auto");
+            }
+        });
 
         setTimeout(nextQuestion, delayWrong);
     }
 
-    document.getElementById("score").innerText =
-        `Score actuel : ${score} / ${shuffledQuestions.length}`;
+    const scoreDiv = document.getElementById("score");
+    if (scoreDiv) {
+        scoreDiv.innerText = `Score actuel : ${score} / ${shuffledQuestions.length}`;
+    }
 }
 
-/* ============================================================
-============== NAVIGATION QUESTIONS ===========================
-============================================================ */
-
+// =============================
+// NAVIGATION QUESTIONS
+// =============================
 function nextQuestion() {
     current++;
     if (current < shuffledQuestions.length) {
@@ -253,33 +261,30 @@ function nextQuestion() {
     }
 }
 
-/* ============================================================
-============== FIN DU QUIZ ====================================
-============================================================ */
-
+// =============================
+// FIN DU QUIZ
+// =============================
 function endQuiz() {
     document.getElementById("quiz").innerHTML = `
         <h2>Quiz terminé !</h2>
         <p>Score final : ${score} / ${shuffledQuestions.length}</p>
     `;
-
     stopMusic();
 }
 
-/* ============================================================
-============== LANCEMENT QUIZ =================================
-============================================================ */
-
+// =============================
+// LANCEMENT QUIZ
+// =============================
 document.getElementById("startQuiz").addEventListener("click", () => {
     startMusic();
 
-    const nom = document.getElementById("nom").value.trim();
-    const prenom = document.getElementById("prenom").value.trim();
+    const nomInput = document.getElementById("nom");
+    const prenomInput = document.getElementById("prenom");
+    const nom = nomInput.value.trim();
+    const prenom = prenomInput.value.trim();
 
-    if (!nom || !prenom) {
-        alert("Merci de renseigner votre nom et prénom avant de commencer.");
-        return;
-    }
+    if (!nom) return nomInput.focus();
+    if (!prenom) return prenomInput.focus();
 
     user = { nom, prenom };
     shuffledQuestions = shuffleQuestions();
