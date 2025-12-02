@@ -31,6 +31,25 @@ function shuffleArray(arr) {
 }
 
 // ==============================
+//   ANIMATION BONUS PLAY MATHS
+// ==============================
+function showBonusAnimation(bonus, element) {
+  const bonusDiv = document.createElement("div");
+  bonusDiv.className = "playmaths-bonus";
+  bonusDiv.textContent = `+${bonus}`;
+
+  const rect = element.getBoundingClientRect();
+  bonusDiv.style.left = rect.left + window.scrollX + rect.width / 2 + "px";
+  bonusDiv.style.top = rect.top + window.scrollY - 10 + "px";
+
+  document.body.appendChild(bonusDiv);
+
+  setTimeout(() => {
+    bonusDiv.remove();
+  }, 1000);
+}
+
+// ==============================
 //        DÉMARRAGE
 // ==============================
 startBtn.addEventListener("click", () => {
@@ -120,8 +139,11 @@ function handleAnswer(option, selectedDiv) {
     else if (timeTaken < 5) bonus = 3;
     else if (timeTaken < 10) bonus = 1;
 
-    bonus *= 10;
+    bonus *= 10;       // multiplicateur ×10
     playMathsPoints += bonus;
+
+    // 🎉 Animation bonus
+    showBonusAnimation(bonus, selectedDiv);
 
   } else {
     if (selectedDiv) selectedDiv.classList.add("answer-wrong");
