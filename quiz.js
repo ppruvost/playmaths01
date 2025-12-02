@@ -36,6 +36,7 @@ function shuffleArray(arr) {
 startBtn.addEventListener("click", () => {
   const nom = nomInput.value.trim();
   const prenom = prenomInput.value.trim();
+
   if (!nom) { nomInput.focus(); return; }
   if (!prenom) { prenomInput.focus(); return; }
 
@@ -119,9 +120,7 @@ function handleAnswer(option, selectedDiv) {
     else if (timeTaken < 5) bonus = 3;
     else if (timeTaken < 10) bonus = 1;
 
-    // 👉 Multiplicateur x10
-    bonus = bonus * 10;
-
+    bonus *= 10;
     playMathsPoints += bonus;
 
   } else {
@@ -137,7 +136,8 @@ function handleAnswer(option, selectedDiv) {
   explanationBox.innerHTML = `<strong>Explication :</strong> ${q.explication || ""}`;
   explanationBox.style.display = "block";
 
-  scoreBox.textContent = `Score : ${score} / ${shuffledQuestions.length} — Play Maths : ${playMathsPoints} pts`;
+  scoreBox.textContent =
+    `Score : ${score} / ${shuffledQuestions.length} — Play Maths : ${playMathsPoints} pts`;
 
   setTimeout(() => {
     current++;
@@ -165,7 +165,8 @@ function forceTimeout() {
   explanationBox.innerHTML = `<strong>Explication :</strong> ${q.explication || ""}`;
   explanationBox.style.display = "block";
 
-  scoreBox.textContent = `Score : ${score} / ${shuffledQuestions.length} — Play Maths : ${playMathsPoints} pts`;
+  scoreBox.textContent =
+    `Score : ${score} / ${shuffledQuestions.length} — Play Maths : ${playMathsPoints} pts`;
 
   setTimeout(() => {
     current++;
@@ -184,7 +185,7 @@ function startTimer() {
   const circumference = 2 * Math.PI * radius;
 
   timerCircle.style.strokeDasharray = `${circumference}`;
-  timerCircle.style.strokeDashoffset = `0`;
+  timerCircle.style.strokeDashoffset = "0";
   timerCircle.style.stroke = "#e0e0e0";
 
   timerNumber.textContent = timeLeft;
@@ -196,7 +197,7 @@ function startTimer() {
     const offset = circumference - (timeLeft / 30) * circumference;
     timerCircle.style.strokeDashoffset = offset;
 
-    timerCircle.style.stroke = (timeLeft <= 10 ? "#f39c12" : "#3498db");
+    timerCircle.style.stroke = timeLeft <= 10 ? "#f39c12" : "#3498db";
 
     if (timeLeft <= 0) {
       clearInterval(timerInterval);
@@ -218,7 +219,10 @@ function endQuiz() {
   clearTimer();
 
   if (bgMusic) {
-    try { bgMusic.pause(); bgMusic.currentTime = 0; } catch (e) {}
+    try {
+      bgMusic.pause();
+      bgMusic.currentTime = 0;
+    } catch (e) {}
   }
   if (victorySound) {
     victorySound.play().catch(() => {});
