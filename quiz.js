@@ -31,7 +31,7 @@ function shuffleArray(arr) {
 }
 
 // ==============================
-//        DEMARRAGE
+//        DÉMARRAGE
 // ==============================
 startBtn.addEventListener("click", () => {
   const nom = nomInput.value.trim();
@@ -39,7 +39,6 @@ startBtn.addEventListener("click", () => {
   if (!nom) { nomInput.focus(); return; }
   if (!prenom) { prenomInput.focus(); return; }
 
-  // reset
   score = 0;
   current = 0;
   playMathsPoints = 0;
@@ -53,7 +52,7 @@ startBtn.addEventListener("click", () => {
 
   if (bgMusic) {
     bgMusic.volume = 0.35;
-    bgMusic.play().catch(() => { });
+    bgMusic.play().catch(() => {});
   }
 
   document.getElementById("userForm").style.display = "none";
@@ -88,8 +87,10 @@ function showQuestion() {
     answerGrid.appendChild(d);
   });
 
-  startTime = Date.now(); // chrono bonus
+  startTime = Date.now();
   startTimer();
+
+  scoreBox.textContent = `Score : ${score} / ${shuffledQuestions.length} — Play Maths : ${playMathsPoints} pts`;
 }
 
 // ==============================
@@ -118,6 +119,9 @@ function handleAnswer(option, selectedDiv) {
     else if (timeTaken < 5) bonus = 3;
     else if (timeTaken < 10) bonus = 1;
 
+    // 👉 Multiplicateur x10
+    bonus = bonus * 10;
+
     playMathsPoints += bonus;
 
   } else {
@@ -133,15 +137,12 @@ function handleAnswer(option, selectedDiv) {
   explanationBox.innerHTML = `<strong>Explication :</strong> ${q.explication || ""}`;
   explanationBox.style.display = "block";
 
-  scoreBox.textContent = `Score : ${score} / ${shuffledQuestions.length}`;
+  scoreBox.textContent = `Score : ${score} / ${shuffledQuestions.length} — Play Maths : ${playMathsPoints} pts`;
 
   setTimeout(() => {
     current++;
-    if (current < shuffledQuestions.length) {
-      showQuestion();
-    } else {
-      endQuiz();
-    }
+    if (current < shuffledQuestions.length) showQuestion();
+    else endQuiz();
   }, 9000);
 }
 
@@ -164,15 +165,12 @@ function forceTimeout() {
   explanationBox.innerHTML = `<strong>Explication :</strong> ${q.explication || ""}`;
   explanationBox.style.display = "block";
 
-  scoreBox.textContent = `Score : ${score} / ${shuffledQuestions.length}`;
+  scoreBox.textContent = `Score : ${score} / ${shuffledQuestions.length} — Play Maths : ${playMathsPoints} pts`;
 
   setTimeout(() => {
     current++;
-    if (current < shuffledQuestions.length) {
-      showQuestion();
-    } else {
-      endQuiz();
-    }
+    if (current < shuffledQuestions.length) showQuestion();
+    else endQuiz();
   }, 9000);
 }
 
@@ -198,7 +196,6 @@ function startTimer() {
     const offset = circumference - (timeLeft / 30) * circumference;
     timerCircle.style.strokeDashoffset = offset;
 
-    // 🔧 Correction du bug de guillemet !
     timerCircle.style.stroke = (timeLeft <= 10 ? "#f39c12" : "#3498db");
 
     if (timeLeft <= 0) {
@@ -214,17 +211,17 @@ function clearTimer() {
 }
 
 // ==============================
-//     FIN DU QUIZ — COMPLÉTÉ
+//       FIN DU QUIZ
 // ==============================
 function endQuiz() {
 
   clearTimer();
 
   if (bgMusic) {
-    try { bgMusic.pause(); bgMusic.currentTime = 0; } catch (e) { }
+    try { bgMusic.pause(); bgMusic.currentTime = 0; } catch (e) {}
   }
   if (victorySound) {
-    victorySound.play().catch(() => { });
+    victorySound.play().catch(() => {});
   }
 
   try {
@@ -233,24 +230,29 @@ function endQuiz() {
       spread: 100,
       origin: { y: 0.6 }
     });
-  } catch (e) { }
+  } catch (e) {}
 
   const total = shuffledQuestions.length;
   const noteSur20 = Math.round((score / total) * 20);
 
-  questionBox.textContent = `Quiz terminé ! Score final : ${score} / ${total} (Note : ${noteSur20}/20)`;
+  questionBox.textContent =
+    `Quiz terminé !
+Score final : ${score} / ${total}
+Note : ${noteSur20}/20
+Play Maths : ${playMathsPoints} points 🎉`;
+
   answerGrid.innerHTML = "";
   explanationBox.style.display = "none";
-  scoreBox.textContent = `Score final : ${score} / ${total}`;
+
+  scoreBox.textContent =
+    `Score final : ${score} / ${total} — Play Maths : ${playMathsPoints} pts`;
 
   const user = {
     nom: nomInput.value.trim(),
     prenom: prenomInput.value.trim()
   };
 
-  // 👉 ENVOI COMPLET À EmailJS
   if (typeof sendResults === "function") {
     sendResults(user, score, total, noteSur20, playMathsPoints, shuffledQuestions);
   }
-
 }
