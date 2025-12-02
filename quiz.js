@@ -26,44 +26,48 @@ const victorySound = document.getElementById("victorySound");
 const bgMusic = document.getElementById("bgMusic");
 
 // Mélange
-function shuffleArray(arr){
-  return arr.slice().sort(()=>Math.random()-0.5);
+function shuffleArray(arr) {
+  return arr.slice().sort(() => Math.random() - 0.5);
 }
 
-// DEMARRAGE
+// ==============================
+//        DEMARRAGE
+// ==============================
 startBtn.addEventListener("click", () => {
   const nom = nomInput.value.trim();
   const prenom = prenomInput.value.trim();
-  if(!nom){ nomInput.focus(); return; }
-  if(!prenom){ prenomInput.focus(); return; }
+  if (!nom) { nomInput.focus(); return; }
+  if (!prenom) { prenomInput.focus(); return; }
 
   // reset
   score = 0;
   current = 0;
   playMathsPoints = 0;
 
-  if(!Array.isArray(questions) || questions.length === 0){
+  if (!Array.isArray(questions) || questions.length === 0) {
     alert("Erreur : questions introuvables. Vérifie questions.js");
     return;
   }
 
   shuffledQuestions = shuffleArray(questions);
 
-  if(bgMusic){
+  if (bgMusic) {
     bgMusic.volume = 0.35;
-    bgMusic.play().catch(()=>{});
+    bgMusic.play().catch(() => { });
   }
 
   document.getElementById("userForm").style.display = "none";
   showQuestion();
 });
 
-// AFFICHE QUESTION
-function showQuestion(){
+// ==============================
+//       AFFICHE QUESTION
+// ==============================
+function showQuestion() {
   clearTimer();
 
   const q = shuffledQuestions[current];
-  if(!q){
+  if (!q) {
     endQuiz();
     return;
   }
@@ -73,7 +77,7 @@ function showQuestion(){
   explanationBox.innerHTML = "";
   answerGrid.innerHTML = "";
 
-  const colors = ["red","blue","yellow","green"];
+  const colors = ["red", "blue", "yellow", "green"];
   q.options.forEach((opt, idx) => {
     const d = document.createElement("div");
     d.className = `answer ${colors[idx % colors.length]}`;
@@ -84,12 +88,14 @@ function showQuestion(){
     answerGrid.appendChild(d);
   });
 
-  startTime = Date.now();  // chrono bonus
+  startTime = Date.now(); // chrono bonus
   startTimer();
 }
 
-// CLICK RÉPONSE
-function handleAnswer(option, selectedDiv){
+// ==============================
+//          CLICK RÉPONSE
+// ==============================
+function handleAnswer(option, selectedDiv) {
   clearTimer();
 
   const q = shuffledQuestions[current];
@@ -100,24 +106,25 @@ function handleAnswer(option, selectedDiv){
   const correct = q.bonne_reponse;
   const isCorrect = option === correct;
 
-  if(isCorrect){
-    if(selectedDiv) selectedDiv.classList.add("answer-correct");
+  if (isCorrect) {
+    if (selectedDiv) selectedDiv.classList.add("answer-correct");
     score++;
 
     // BONUS PLAY MATHS
     const timeTaken = (Date.now() - startTime) / 1000;
     let bonus = 0;
 
-    if(timeTaken < 2) bonus = 5;
-    else if(timeTaken < 5) bonus = 3;
-    else if(timeTaken < 10) bonus = 1;
+    if (timeTaken < 2) bonus = 5;
+    else if (timeTaken < 5) bonus = 3;
+    else if (timeTaken < 10) bonus = 1;
 
     playMathsPoints += bonus;
 
   } else {
-    if(selectedDiv) selectedDiv.classList.add("answer-wrong");
+    if (selectedDiv) selectedDiv.classList.add("answer-wrong");
+
     document.querySelectorAll(".answer").forEach(a => {
-      if(a.textContent.trim() === String(correct).trim()){
+      if (a.textContent.trim() === String(correct).trim()) {
         a.classList.add("answer-correct");
       }
     });
@@ -130,7 +137,7 @@ function handleAnswer(option, selectedDiv){
 
   setTimeout(() => {
     current++;
-    if(current < shuffledQuestions.length){
+    if (current < shuffledQuestions.length) {
       showQuestion();
     } else {
       endQuiz();
@@ -138,13 +145,15 @@ function handleAnswer(option, selectedDiv){
   }, 9000);
 }
 
-// TIMEOUT
-function forceTimeout(){
+// ==============================
+//            TIMEOUT
+// ==============================
+function forceTimeout() {
   const q = shuffledQuestions[current];
   q.userAnswer = "Aucune";
 
   document.querySelectorAll(".answer").forEach(a => {
-    if(a.textContent.trim() === String(q.bonne_reponse).trim()){
+    if (a.textContent.trim() === String(q.bonne_reponse).trim()) {
       a.classList.add("answer-correct");
     } else {
       a.classList.add("answer-wrong");
@@ -159,7 +168,7 @@ function forceTimeout(){
 
   setTimeout(() => {
     current++;
-    if(current < shuffledQuestions.length){
+    if (current < shuffledQuestions.length) {
       showQuestion();
     } else {
       endQuiz();
@@ -167,13 +176,17 @@ function forceTimeout(){
   }, 9000);
 }
 
-// TIMER SVG
-function startTimer(){
+// ==============================
+//           TIMER SVG
+// ==============================
+function startTimer() {
   timeLeft = 30;
+
   const radius = 35;
   const circumference = 2 * Math.PI * radius;
+
   timerCircle.style.strokeDasharray = `${circumference}`;
-  timerCircle.style.strokeDashoffset = `${0}`;
+  timerCircle.style.strokeDashoffset = `0`;
   timerCircle.style.stroke = "#e0e0e0";
 
   timerNumber.textContent = timeLeft;
@@ -185,33 +198,42 @@ function startTimer(){
     const offset = circumference - (timeLeft / 30) * circumference;
     timerCircle.style.strokeDashoffset = offset;
 
-    timerCircle.style.stroke = (timeLeft <= 10 ? "#f39c12" : "#3498db`);
+    // 🔧 Correction du bug de guillemet !
+    timerCircle.style.stroke = (timeLeft <= 10 ? "#f39c12" : "#3498db");
 
-    if(timeLeft <= 0){
+    if (timeLeft <= 0) {
       clearInterval(timerInterval);
       forceTimeout();
     }
   }, 1000);
 }
 
-function clearTimer(){
-  if(timerInterval) clearInterval(timerInterval);
+function clearTimer() {
+  if (timerInterval) clearInterval(timerInterval);
   timerInterval = null;
 }
 
 // ==============================
-//     FIN DU QUIZ — CORRIGÉ
+//     FIN DU QUIZ — COMPLÉTÉ
 // ==============================
-function endQuiz(){
+function endQuiz() {
 
   clearTimer();
 
-  if(bgMusic){ try{ bgMusic.pause(); bgMusic.currentTime = 0; } catch(e){} }
-  if(victorySound) victorySound.play().catch(()=>{});
+  if (bgMusic) {
+    try { bgMusic.pause(); bgMusic.currentTime = 0; } catch (e) { }
+  }
+  if (victorySound) {
+    victorySound.play().catch(() => { });
+  }
 
-  try{
-    confetti && confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
-  }catch(e){}
+  try {
+    confetti && confetti({
+      particleCount: 150,
+      spread: 100,
+      origin: { y: 0.6 }
+    });
+  } catch (e) { }
 
   const total = shuffledQuestions.length;
   const noteSur20 = Math.round((score / total) * 20);
@@ -226,8 +248,8 @@ function endQuiz(){
     prenom: prenomInput.value.trim()
   };
 
-  // 👉 ENVOI COMPLÈT COMPLET À EmailJS
-  if(typeof sendResults === "function"){
+  // 👉 ENVOI COMPLET À EmailJS
+  if (typeof sendResults === "function") {
     sendResults(user, score, total, noteSur20, playMathsPoints, shuffledQuestions);
   }
 
